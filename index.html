@@ -2,77 +2,209 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sequence Live Pro</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Sequence Live</title>
     <style>
-        :root { --bg: #0f172a; --panel: #1e293b; --text: #fff; --board: #334155; --card: #fff; --free: #f59e0b; }
-        body { font-family: system-ui, sans-serif; background: var(--bg); color: var(--text); margin: 0; padding: 1rem; display: flex; flex-direction: column; align-items: center; min-height: 100vh; position: relative; }
+        /* --- PREMIUM iOS DESIGN SYSTEM --- */
+        :root {
+            --bg-color: #0f172a;
+            --glass-bg: rgba(30, 41, 59, 0.75);
+            --glass-border: rgba(255, 255, 255, 0.12);
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --board-bg: #1e293b;
+            --card-bg: #ffffff;
+            --free-bg: #fbbf24;
+            --accent-blue: #0A84FF; /* iOS Blue */
+            --accent-green: #30D158; /* iOS Green */
+            --accent-red: #FF453A; /* iOS Red */
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+            background: radial-gradient(circle at top left, #1e293b, var(--bg-color) 70%);
+            color: var(--text-main);
+            margin: 0;
+            padding: 1rem;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            -webkit-font-smoothing: antialiased;
+            overflow-x: hidden;
+        }
         
         #lobby, #game { width: 100%; max-width: 800px; display: none; flex-direction: column; gap: 1.5rem; }
-        .panel { background: var(--panel); padding: 1.5rem; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); }
-        h1, h2, h3 { margin-top: 0; text-align: center; }
         
-        button { width: 100%; padding: 0.75rem; background: #2563eb; color: white; border: none; border-radius: 6px; font-size: 1rem; font-weight: bold; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s; }
-        button:hover { background: #1d4ed8; }
-        select, input { width: 100%; padding: 0.75rem; border-radius: 6px; border: 1px solid #475569; background: #334155; color: white; box-sizing: border-box; font-size: 1rem; }
+        /* Glassmorphism Panels */
+        .panel { 
+            background: var(--glass-bg); 
+            backdrop-filter: blur(16px); 
+            -webkit-backdrop-filter: blur(16px);
+            padding: 2rem; 
+            border-radius: 24px; 
+            border: 1px solid var(--glass-border);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4); 
+            animation: fadeUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         
-        .header { display: flex; justify-content: space-between; align-items: center; background: var(--panel); padding: 1rem; border-radius: 12px; border-top: 4px solid transparent; margin-top: 3rem; }
-        .action-text { color: #fbbf24; font-weight: bold; font-size: 0.9rem; }
+        h1, h2, h3 { margin-top: 0; text-align: center; font-weight: 700; letter-spacing: -0.5px; }
+        h1 { font-size: 2.2rem; background: linear-gradient(135deg, #fff, #94a3b8); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
         
-        .board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; background: var(--board); padding: 8px; border-radius: 12px; aspect-ratio: 1/1; }
-        .square { background: var(--card); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; user-select: none; }
-        .square.free { background: var(--free); color: black; font-weight: bold; font-size: 0.8rem; }
+        /* Native iOS Buttons & Inputs */
+        button { 
+            width: 100%; padding: 1rem; background: var(--accent-blue); color: white; 
+            border: none; border-radius: 999px; font-size: 1.1rem; font-weight: 600; 
+            cursor: pointer; margin-top: 0.5rem; 
+            transition: all 0.2s cubic-bezier(0.25, 0.8, 0.25, 1);
+            box-shadow: 0 4px 14px rgba(10, 132, 255, 0.4);
+        }
+        button:hover { transform: scale(1.02); box-shadow: 0 6px 20px rgba(10, 132, 255, 0.6); }
+        button:active { transform: scale(0.96); }
         
-        .card-val { font-size: clamp(0.7rem, 2vw, 1.2rem); font-weight: bold; line-height: 1; }
-        .card-suit { font-size: clamp(0.8rem, 2.5vw, 1.5rem); line-height: 1; margin-top: -2px; }
-        .red { color: #dc2626; } .black { color: #0f172a; }
+        select, input { 
+            width: 100%; padding: 1rem; border-radius: 14px; border: 1px solid var(--glass-border); 
+            background: rgba(0,0,0,0.2); color: white; box-sizing: border-box; font-size: 1.05rem; 
+            transition: border-color 0.2s; outline: none;
+        }
+        select:focus, input:focus { border-color: var(--accent-blue); }
         
-        .chip { position: absolute; inset: 4px; border-radius: 50%; opacity: 0.9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); }
+        /* Premium Header */
+        .header { 
+            display: flex; justify-content: space-between; align-items: center; 
+            background: var(--glass-bg); backdrop-filter: blur(16px); -webkit-backdrop-filter: blur(16px);
+            padding: 1.2rem 1.5rem; border-radius: 20px; border: 1px solid var(--glass-border); 
+            border-top: 5px solid transparent; margin-top: 2rem; transition: all 0.3s ease;
+        }
+        .action-text { color: #fbbf24; font-weight: 600; font-size: 0.95rem; margin-top: 4px; }
         
-        .hand { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
-        .hand-card { width: 60px; height: 85px; background: var(--card); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; position: relative; }
-        .hand-card.selected { transform: translateY(-10px); border-color: #3b82f6; box-shadow: 0 4px 12px rgba(59,130,246,0.5); }
-        .jack-label { position: absolute; bottom: 2px; font-size: 0.55rem; font-weight: bold; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; }
+        /* The Board */
+        .board { 
+            position: relative; display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; 
+            background: rgba(15, 23, 42, 0.8); padding: 8px; border-radius: 16px; 
+            aspect-ratio: 1/1; box-shadow: inset 0 4px 10px rgba(0,0,0,0.5), 0 10px 30px rgba(0,0,0,0.5);
+            border: 1px solid var(--glass-border);
+        }
+        .square { 
+            background: var(--card-bg); border-radius: 6px; display: flex; flex-direction: column; 
+            align-items: center; justify-content: center; position: relative; cursor: pointer; 
+            user-select: none; transition: transform 0.1s, filter 0.2s;
+        }
+        .square:active { transform: scale(0.92); filter: brightness(0.8); }
+        .square.free { background: linear-gradient(135deg, #fde047, #f59e0b); color: #78350f; font-weight: 800; font-size: clamp(0.6rem, 1.8vw, 0.9rem); box-shadow: inset 0 2px 4px rgba(255,255,255,0.4); }
+        
+        .card-val { font-size: clamp(0.7rem, 2vw, 1.3rem); font-weight: 800; line-height: 1; }
+        .card-suit { font-size: clamp(0.8rem, 2.5vw, 1.6rem); line-height: 1; margin-top: -2px; }
+        .red { color: var(--accent-red); } .black { color: #1c1c1e; }
+        
+        /* Chip Physics Animation */
+        @keyframes chipDrop {
+            0% { transform: scale(0.2) translateY(-20px); opacity: 0; }
+            60% { transform: scale(1.1) translateY(2px); opacity: 1; }
+            100% { transform: scale(1) translateY(0); opacity: 1; }
+        }
+        .chip { 
+            position: absolute; inset: 4px; border-radius: 50%; opacity: 0.95; 
+            box-shadow: inset 0 3px 6px rgba(255,255,255,0.4), inset 0 -4px 6px rgba(0,0,0,0.4), 0 4px 8px rgba(0,0,0,0.5); 
+            border: 1px solid rgba(255,255,255,0.2); z-index: 5;
+            animation: chipDrop 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+        }
+        
+        /* Fluid Cards */
+        .hand { display: flex; flex-wrap: wrap; gap: 0.75rem; justify-content: center; perspective: 1000px; }
+        .hand-card { 
+            width: 65px; height: 95px; background: var(--card-bg); border-radius: 10px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            cursor: pointer; position: relative;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            animation: fadeUp 0.5s ease backwards;
+        }
+        .hand-card:nth-child(1) { animation-delay: 0.05s; }
+        .hand-card:nth-child(2) { animation-delay: 0.1s; }
+        .hand-card:nth-child(3) { animation-delay: 0.15s; }
+        .hand-card:nth-child(4) { animation-delay: 0.2s; }
+        .hand-card:nth-child(5) { animation-delay: 0.25s; }
+        .hand-card:nth-child(6) { animation-delay: 0.3s; }
+        .hand-card:nth-child(7) { animation-delay: 0.35s; }
+
+        .hand-card:hover { transform: translateY(-8px) scale(1.05); box-shadow: 0 12px 20px rgba(0,0,0,0.4); z-index: 10; }
+        .hand-card.selected { 
+            transform: translateY(-15px) scale(1.1); 
+            border: 3px solid var(--accent-blue); 
+            box-shadow: 0 15px 30px rgba(10, 132, 255, 0.5); 
+            z-index: 20; 
+        }
+        .jack-label { position: absolute; bottom: 4px; font-size: 0.55rem; font-weight: 700; background: rgba(0,0,0,0.85); color: white; padding: 3px 6px; border-radius: 6px; letter-spacing: 0.5px; text-transform: uppercase; }
         
         /* Team Colors */
-        .team-red { background-color: #ef4444; border-color: #ef4444; }
-        .team-blue { background-color: #3b82f6; border-color: #3b82f6; }
-        .team-green { background-color: #10b981; border-color: #10b981; }
+        .team-red { background-color: var(--accent-red); border-color: var(--accent-red); }
+        .team-blue { background-color: var(--accent-blue); border-color: var(--accent-blue); }
+        .team-green { background-color: var(--accent-green); border-color: var(--accent-green); }
 
-        /* Dynamic Lobby Badge */
-        .seat-selection-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
+        .seat-selection-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1.5rem; }
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
-        .team-preview-badge { padding: 0 1rem; border-radius: 6px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
+        .team-preview-badge { padding: 0 1rem; border-radius: 14px; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; min-width: 80px; box-shadow: inset 0 2px 4px rgba(255,255,255,0.3); transition: background-color 0.3s; }
 
-        #overlay { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; align-items: center; justify-content: center; padding: 1rem; text-align: center; }
+        /* Smooth Overlays */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes fadeUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
         
-        /* Chat Styles */
-        .chat-widget { position: fixed; top: 1rem; right: 1rem; z-index: 100; display: none; }
-        .chat-btn { background: #3b82f6; color: white; border-radius: 50%; width: 50px; height: 50px; box-shadow: 0 4px 10px rgba(0,0,0,0.5); display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.5rem; border: 2px solid #60a5fa; transition: transform 0.2s; }
-        .chat-btn:hover { transform: scale(1.05); }
-        .chat-btn .badge { position: absolute; top: -5px; right: -5px; background: #ef4444; color: white; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; display: none; }
-        .chat-panel { display: none; position: absolute; top: 60px; right: 0; width: 320px; height: 450px; background: var(--panel); border-radius: 12px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); flex-direction: column; overflow: hidden; border: 1px solid #475569; }
-        .chat-header-bar { background: #334155; padding: 12px; font-weight: bold; text-align: center; border-bottom: 1px solid #475569; display: flex; justify-content: space-between; align-items: center; }
-        .close-chat { cursor: pointer; color: #94a3b8; font-size: 1.2rem; }
-        .chat-messages { flex-grow: 1; padding: 12px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; background: #1e293b; }
-        .msg { padding: 8px 12px; border-radius: 8px; max-width: 85%; font-size: 0.95rem; word-wrap: break-word; }
-        .msg.mine { background: #3b82f6; align-self: flex-end; border-bottom-right-radius: 2px; }
-        .msg.others { background: #475569; align-self: flex-start; border-bottom-left-radius: 2px; }
-        .msg-name { font-size: 0.7rem; opacity: 0.6; margin-bottom: 4px; display: block; font-weight: bold; }
-        .chat-input-area { display: flex; padding: 10px; background: #334155; border-top: 1px solid #475569; }
-        .chat-input-area input { margin-bottom: 0; border-radius: 6px 0 0 6px; border: none; }
-        .chat-input-area button { margin-top: 0; width: auto; border-radius: 0 6px 6px 0; padding: 0.75rem 1.2rem; }
+        #overlay { display: flex; position: fixed; inset: 0; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); z-index: 200; flex-direction: column; align-items: center; justify-content: center; text-align: center; animation: fadeIn 0.3s; }
+        
+        /* Premium Chat Widget */
+        .chat-widget { position: fixed; top: 1.5rem; right: 1.5rem; z-index: 100; display: none; perspective: 1000px; }
+        .chat-btn { 
+            background: var(--glass-bg); backdrop-filter: blur(10px); color: white; border-radius: 50%; 
+            width: 55px; height: 55px; box-shadow: 0 8px 24px rgba(0,0,0,0.4); display: flex; align-items: center; 
+            justify-content: center; cursor: pointer; font-size: 1.5rem; border: 1px solid var(--glass-border); 
+            transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1); 
+        }
+        .chat-btn:hover { transform: scale(1.1); background: rgba(255,255,255,0.1); }
+        .chat-btn .badge { position: absolute; top: 0; right: 0; background: var(--accent-red); color: white; font-size: 0.75rem; font-weight: 800; padding: 2px 6px; border-radius: 10px; display: none; border: 2px solid #1e293b; }
+        
+        .chat-panel { 
+            position: absolute; top: 70px; right: 0; width: 340px; height: 500px; 
+            background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px); 
+            border-radius: 20px; box-shadow: 0 20px 50px rgba(0,0,0,0.6); flex-direction: column; 
+            overflow: hidden; border: 1px solid var(--glass-border);
+            transform-origin: top right;
+            transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+            opacity: 0; transform: scale(0.9) translateY(-20px); pointer-events: none;
+        }
+        .chat-panel.open { opacity: 1; transform: scale(1) translateY(0); pointer-events: auto; }
+        
+        .chat-header-bar { background: rgba(0,0,0,0.2); padding: 16px; font-weight: 700; text-align: center; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .close-chat { cursor: pointer; color: var(--text-muted); font-size: 1.4rem; transition: color 0.2s; }
+        .close-chat:hover { color: white; }
+        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 12px; }
+        
+        .msg { padding: 10px 14px; border-radius: 18px; max-width: 80%; font-size: 0.95rem; line-height: 1.4; word-wrap: break-word; animation: fadeUp 0.3s ease; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .msg.mine { background: var(--accent-blue); align-self: flex-end; border-bottom-right-radius: 4px; color: white; }
+        .msg.others { background: rgba(255,255,255,0.1); align-self: flex-start; border-bottom-left-radius: 4px; border: 1px solid var(--glass-border); }
+        .msg-name { font-size: 0.7rem; opacity: 0.7; margin-bottom: 4px; display: block; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+        
+        .chat-input-area { display: flex; gap: 8px; padding: 16px; background: rgba(0,0,0,0.2); border-top: 1px solid var(--glass-border); }
+        .chat-input-area input { margin-bottom: 0; border-radius: 999px; }
+        .chat-input-area button { margin-top: 0; width: auto; border-radius: 999px; padding: 0.8rem 1.4rem; box-shadow: none; }
 
-        @media (max-width: 500px) {
-            .board { gap: 2px; padding: 4px; }
+        @media (max-width: 600px) {
+            .board { gap: 2px; padding: 4px; border-radius: 12px; }
+            .square { border-radius: 4px; }
             .square.free { font-size: 0.6rem; }
-            .chat-panel { width: calc(100vw - 2rem); right: 0; }
+            .chat-panel { width: calc(100vw - 3rem); height: 60vh; }
+            .hand-card { width: 55px; height: 80px; }
+            h1 { font-size: 1.8rem; }
         }
     </style>
 </head>
 <body>
 
-    <div id="overlay"><h1>Connecting...</h1></div>
+    <div id="overlay">
+        <div style="width: 40px; height: 40px; border: 4px solid rgba(255,255,255,0.1); border-top-color: var(--accent-blue); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 1rem;"></div>
+        <h2 style="margin:0;">Connecting...</h2>
+    </div>
+    <style>@keyframes spin { to { transform: rotate(360deg); } }</style>
 
     <div id="chat-container" class="chat-widget">
         <div class="chat-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></div>
@@ -83,16 +215,16 @@
             </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Type a message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
+                <input type="text" id="chat-input" placeholder="iMessage..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
                 <button onclick="sendChat()">Send</button>
             </div>
         </div>
     </div>
 
     <div id="lobby" class="panel">
-        <h1>Sequence Lobby</h1>
-        <div id="host-section" style="margin-bottom: 2rem;">
-            <h3>Host a New Game</h3>
+        <h1>Sequence Pro</h1>
+        <div id="host-section" style="margin-bottom: 1.5rem;">
+            <h3 style="color: var(--text-muted); font-size: 1rem; text-transform: uppercase;">Host a New Game</h3>
             <select id="player-count" style="margin-bottom: 1rem;">
                 <option value="2">2 Players (Red vs Blue)</option>
                 <option value="3">3 Players (Red vs Blue vs Green)</option>
@@ -102,37 +234,39 @@
             <button onclick="hostGame()">Create & Shuffle Deck</button>
         </div>
         
-        <div id="join-section" style="display: none; border-top: 1px solid #475569; padding-top: 1.5rem;">
-            <h3 style="color: #10b981; margin-bottom: 1.5rem;">Active Game Found!</h3>
+        <div id="join-section" style="display: none; border-top: 1px solid var(--glass-border); padding-top: 1.5rem;">
+            <h3 style="color: var(--accent-green); margin-bottom: 1.5rem;">Active Game Found!</h3>
             
-            <label style="font-size: 0.9rem; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">1. Choose your seat:</label>
+            <label style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-weight: 600;">1. Choose your seat:</label>
             <div class="seat-selection-row">
                 <select id="seat-selector" onchange="updateLobbyTeamColor()"></select>
                 <div id="lobby-team-preview" class="team-preview-badge">TEAM</div>
             </div>
             
-            <label style="font-size: 0.9rem; color: #cbd5e1; display: block; margin-bottom: 0.5rem;">2. Enter your name:</label>
+            <label style="font-size: 0.9rem; color: var(--text-muted); display: block; margin-bottom: 0.5rem; font-weight: 600;">2. Enter your name:</label>
             <input type="text" id="join-name" placeholder="e.g. John Doe" style="margin-bottom: 1.5rem;" />
             
-            <button style="background: #10b981;" onclick="joinGame()">Join Game</button>
-            <button style="background: #ef4444; margin-top: 1rem;" onclick="endGame()">End/Reset Server</button>
+            <button style="background: var(--accent-green); box-shadow: 0 4px 14px rgba(48, 209, 88, 0.4);" onclick="joinGame()">Join Game</button>
+            <button style="background: rgba(255,255,255,0.1); color: var(--accent-red); box-shadow: none; margin-top: 1rem;" onclick="endGame()">End / Reset Server</button>
         </div>
     </div>
 
     <div id="game">
         <div id="game-header" class="header">
             <div>
-                <h2 id="turn-indicator">Waiting...</h2>
+                <h2 id="turn-indicator" style="margin: 0; font-size: 1.4rem;">Waiting...</h2>
                 <div id="action-hint" class="action-text"></div>
             </div>
-            <div style="text-align: right; color: #cbd5e1; font-size: 0.9rem;">
-                Deck: <span id="deck-count">0</span><br>
-                <span id="my-identity" style="font-weight: bold; color: white;"></span>
+            <div style="text-align: right; color: var(--text-muted); font-size: 0.9rem; font-weight: 500;">
+                Deck: <span id="deck-count" style="color: white; font-weight: 700;">0</span><br>
+                <span id="my-identity" style="font-weight: 700; color: white;"></span>
             </div>
         </div>
-        <div id="board" class="board"></div>
-        <div class="panel">
-            <h3 id="hand-title">Your Hand</h3>
+        <div id="board" class="board">
+            <svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>
+        </div>
+        <div class="panel" style="padding: 1.5rem;">
+            <h3 id="hand-title" style="margin-bottom: 1rem; font-size: 1.1rem; color: var(--text-muted);">Your Hand</h3>
             <div id="hand" class="hand"></div>
         </div>
     </div>
@@ -141,7 +275,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
-        // FIREBASE CONFIG - Integrated per your instructions
+        // FIREBASE CONFIG - Kept exactly as instructed
         const firebaseConfig = {
           apiKey: "AIzaSyCIZmW1u9fFJAXehfPm2_P5s55zzkoFiNQ",
           authDomain: "sequencelive-b2863.firebaseapp.com",
@@ -177,9 +311,15 @@
 
         // --- DATABASE LISTENERS ---
         gameRef.on('value', (snapshot) => {
-            document.getElementById('overlay').style.display = 'none'; 
             const data = snapshot.val();
             gameState = data;
+            
+            // Fade out overlay smoothly
+            const overlay = document.getElementById('overlay');
+            if(overlay.style.display !== 'none') {
+                overlay.style.opacity = '0';
+                setTimeout(() => overlay.style.display = 'none', 300);
+            }
 
             if (!data || data.status === 'LOBBY') showLobby(data);
             else if (data.status === 'PLAYING') {
@@ -188,8 +328,13 @@
                     renderGame();
                 } else showLobby(data);
             } else if (data.status === 'WON') {
-                alert(`GAME OVER! ${data.winner.toUpperCase()} TEAM WINS!`);
-                endGame();
+                renderGame(); 
+                setTimeout(() => {
+                    const overlay = document.getElementById('overlay');
+                    overlay.innerHTML = `<h1 style="font-size: 3rem; margin-bottom: 1rem;">🏆</h1><h1>${data.winner.toUpperCase()} TEAM WINS!</h1><button style="width:200px; margin-top:2rem;" onclick="location.reload()">Back to Lobby</button>`;
+                    overlay.style.display = 'flex';
+                    overlay.style.opacity = '1';
+                }, 1000);
             }
         });
 
@@ -198,7 +343,7 @@
             displayChatMessage(msg);
         });
 
-        // --- LOBBY LOGIC & TEAM PREVIEW ---
+        // --- LOBBY LOGIC ---
         function showLobby(data) {
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
@@ -213,20 +358,17 @@
                 data.players.forEach(p => {
                     seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
                 });
-                
-                updateLobbyTeamColor(); // Trigger preview for default selected seat
+                updateLobbyTeamColor(); 
             } else {
                 document.getElementById('join-section').style.display = 'none';
             }
         }
 
-        // Dynamic Team Color Preview Update
         function updateLobbyTeamColor() {
             if (!gameState || !gameState.players) return;
             const select = document.getElementById('seat-selector');
             const playerId = parseInt(select.value);
             const player = gameState.players[playerId];
-            
             if (player) {
                 const badge = document.getElementById('lobby-team-preview');
                 badge.className = `team-preview-badge ${player.teamClass}`;
@@ -234,14 +376,13 @@
             }
         }
 
-        const SUITS = ['♠', '♥', '♦', '♣'];
-        
         function hostGame() {
             const count = parseInt(document.getElementById('player-count').value);
             const numTeams = (count === 3 || count === 6) ? 3 : 2;
             const teams = ['team-red', 'team-blue', 'team-green'];
             
             let deck = [];
+            const SUITS = ['♠', '♥', '♦', '♣'];
             for (let i = 0; i < 2; i++) {
                 SUITS.forEach(suit => {
                     ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'].forEach(value => {
@@ -251,10 +392,9 @@
                 });
             }
 
-            // Professional Fisher-Yates Shuffle
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap elements randomly
+                [deck[i], deck[j]] = [deck[j], deck[i]]; 
             }
 
             let cardsToDeal = 7;
@@ -263,12 +403,7 @@
 
             let players = [];
             for(let i = 0; i < count; i++) {
-                players.push({ 
-                    id: i, 
-                    name: `Player ${i+1}`, 
-                    teamClass: teams[i % numTeams], 
-                    hand: deck.splice(0, cardsToDeal) 
-                });
+                players.push({ id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal) });
             }
 
             let board = STATIC_BOARD.map(str => {
@@ -280,7 +415,7 @@
 
             chatRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board
+                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}
             });
         }
 
@@ -289,6 +424,9 @@
             const inputName = document.getElementById('join-name').value.trim();
             const myName = inputName || `Player ${myPlayerId + 1}`;
             
+            document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('overlay').style.opacity = '1';
+
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
@@ -297,18 +435,23 @@
             });
         }
 
-        function endGame() { 
-            gameRef.set(null); 
-            chatRef.set(null);
-        }
+        function endGame() { gameRef.set(null); chatRef.set(null); }
 
-        // --- CHAT SYSTEM ---
+        // --- FLUID CHAT SYSTEM ---
         function toggleChat() {
             chatOpen = !chatOpen;
-            document.getElementById('chat-panel').style.display = chatOpen ? 'flex' : 'none';
+            const panel = document.getElementById('chat-panel');
             if (chatOpen) {
+                panel.style.display = 'flex';
+                // Trigger reflow to restart animation
+                void panel.offsetWidth;
+                panel.classList.add('open');
                 document.getElementById('chat-badge').style.display = 'none';
                 scrollToBottom();
+            } else {
+                panel.classList.remove('open');
+                // Wait for animation before display none
+                setTimeout(() => { if(!chatOpen) panel.style.display = 'none'; }, 400);
             }
         }
 
@@ -316,12 +459,7 @@
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text || myPlayerId === null) return;
-            
-            chatRef.push({
-                senderId: myPlayerId,
-                senderName: gameState.players[myPlayerId].name,
-                text: text
-            });
+            chatRef.push({ senderId: myPlayerId, senderName: gameState.players[myPlayerId].name, text: text });
             input.value = '';
         }
 
@@ -329,11 +467,9 @@
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
             const isMine = msg.senderId === myPlayerId;
-            
             div.className = `msg ${isMine ? 'mine' : 'others'}`;
             div.innerHTML = `<span class="msg-name">${msg.senderName}</span>${msg.text}`;
             container.appendChild(div);
-            
             if (!chatOpen && !isMine) document.getElementById('chat-badge').style.display = 'block';
             scrollToBottom();
         }
@@ -341,6 +477,54 @@
         function scrollToBottom() {
             const container = document.getElementById('chat-messages');
             container.scrollTop = container.scrollHeight;
+        }
+
+        // --- SEQUENCE ENGINE ---
+        function detectSequences(board, teamClass) {
+            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
+            const getChip = (x, y) => {
+                if (x<0 || x>9 || y<0 || y>9) return null;
+                const sq = board[y * 10 + x];
+                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null;
+            };
+
+            let foundSequences = [];
+            let lockedChips = new Set(); 
+
+            for (let y=0; y<10; y++) {
+                for (let x=0; x<10; x++) {
+                    for (let [dx, dy] of dirs) {
+                        let match = 0, coords = [], lockedCount = 0;
+                        for (let s=0; s<5; s++) {
+                            const cx = x + (dx*s); const cy = y + (dy*s);
+                            const chip = getChip(cx, cy);
+                            if (chip === teamClass || chip === 'FREE') {
+                                match++; coords.push(`${cx},${cy}`);
+                                if (chip !== 'FREE' && lockedChips.has(`${cx},${cy}`)) lockedCount++;
+                            } else break;
+                        }
+                        if (match === 5 && lockedCount <= 1) {
+                            foundSequences.push(coords);
+                            coords.forEach(c => {
+                                const [parseX, parseY] = c.split(',').map(Number);
+                                if (getChip(parseX, parseY) !== 'FREE') lockedChips.add(c);
+                            });
+                        }
+                    }
+                }
+            }
+            return foundSequences;
+        }
+
+        function isChipLocked(gameState, x, y) {
+            if (!gameState.scoredSequences) return false;
+            const targetStr = `${x},${y}`;
+            for (let team in gameState.scoredSequences) {
+                for (let seq of gameState.scoredSequences[team]) {
+                    if (seq.includes(targetStr)) return true;
+                }
+            }
+            return false;
         }
 
         // --- RENDERING & GAME LOGIC ---
@@ -351,25 +535,29 @@
             const isMyTurn = gameState.turnIndex === myPlayerId;
 
             document.getElementById('game-header').className = `header ${currentPlayer.teamClass}`;
-            document.getElementById('turn-indicator').innerText = isMyTurn ? "YOUR TURN!" : `Waiting for ${currentPlayer.name}...`;
-            document.getElementById('my-identity').innerText = `You are: ${myPlayer.name}`;
+            document.getElementById('turn-indicator').innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
+            document.getElementById('my-identity').innerText = myPlayer.name;
             document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
             
             const hint = document.getElementById('action-hint');
             if (!isMyTurn) { hint.innerText = "Please wait."; }
-            else if (selectedCardIndex === null) { hint.innerText = "Select a card from your hand."; }
+            else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
             else {
                 const c = myPlayer.hand[selectedCardIndex];
-                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Click opponent's chip to remove!";
-                else if (c.isTwoEyed) hint.innerText = "TWO-EYED JACK: Click empty space to place!";
+                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Remove an opponent's chip.";
+                else if (c.isTwoEyed) hint.innerText = "TWO-EYED JACK: Place chip on any open space.";
                 else hint.innerText = "Click matching board space to place.";
             }
 
             const boardDiv = document.getElementById('board');
-            boardDiv.innerHTML = '';
+            boardDiv.innerHTML = '<svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.5));"></svg>';
+            
             gameState.board.forEach((square, index) => {
                 const div = document.createElement('div');
                 div.className = `square ${square.type === 'FREE' ? 'free' : ''}`;
+                
+                const x = index % 10; const y = Math.floor(index / 10);
+                div.id = `sq-${x}-${y}`;
                 
                 if (square.type === 'FREE') div.innerText = 'FREE';
                 else {
@@ -378,10 +566,16 @@
                                      <span class="card-suit ${isRed ? 'red' : 'black'}">${square.card.suit}</span>`;
                 }
 
-                if (square.owner) div.innerHTML += `<div class="chip ${square.owner}"></div>`;
+                if (square.owner) {
+                    // Prevent re-triggering animation on existing chips by checking DOM
+                    div.innerHTML += `<div class="chip ${square.owner}"></div>`;
+                }
                 div.onclick = () => handleBoardClick(index);
                 boardDiv.appendChild(div);
             });
+
+            // Smooth draw of lines
+            setTimeout(drawSequenceLines, 100);
 
             const handDiv = document.getElementById('hand');
             handDiv.innerHTML = '';
@@ -393,7 +587,7 @@
                     if(card.value === 'J') {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">J</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>
-                                         <div class="jack-label">${card.isOneEyed ? 'REMOVE' : 'WILD'}</div>`;
+                                         <div class="jack-label">${card.isOneEyed ? 'one eye' : 'two eyes'}</div>`;
                     } else {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">${card.value}</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>`;
@@ -404,6 +598,49 @@
             }
         }
 
+        // SVG Drawing Animation
+        function drawSequenceLines() {
+            const svg = document.getElementById('sequence-lines');
+            if (!svg || !gameState || !gameState.scoredSequences) return;
+            svg.innerHTML = '';
+
+            const boardRect = document.getElementById('board').getBoundingClientRect();
+
+            Object.values(gameState.scoredSequences).flat().forEach(seq => {
+                const startSq = document.getElementById(`sq-${seq[0].replace(',','-')}`);
+                const endSq = document.getElementById(`sq-${seq[4].replace(',','-')}`);
+                if (!startSq || !endSq) return;
+
+                const sRect = startSq.getBoundingClientRect();
+                const eRect = endSq.getBoundingClientRect();
+
+                const x1 = sRect.left - boardRect.left + (sRect.width / 2);
+                const y1 = sRect.top - boardRect.top + (sRect.height / 2);
+                const x2 = eRect.left - boardRect.left + (eRect.width / 2);
+                const y2 = eRect.top - boardRect.top + (eRect.height / 2);
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute('x1', x1); line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#fde047');
+                line.setAttribute('stroke-width', '6');
+                line.setAttribute('stroke-linecap', 'round');
+                
+                // Native line drawing animation
+                const length = Math.hypot(x2 - x1, y2 - y1);
+                line.style.strokeDasharray = length;
+                line.style.strokeDashoffset = length;
+                line.style.transition = 'stroke-dashoffset 0.8s ease-in-out';
+                
+                svg.appendChild(line);
+                
+                // Force reflow and animate
+                void line.getBoundingClientRect();
+                line.style.strokeDashoffset = 0;
+            });
+        }
+        window.addEventListener('resize', drawSequenceLines);
+
         function handleBoardClick(boardIndex) {
             if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null) return; 
 
@@ -411,12 +648,19 @@
             const myPlayer = newState.players[myPlayerId];
             const playedCard = myPlayer.hand[selectedCardIndex];
             const targetSquare = newState.board[boardIndex];
+            
+            const targetX = boardIndex % 10;
+            const targetY = Math.floor(boardIndex / 10);
 
             let validMove = false;
             if (targetSquare.type === 'FREE') return; 
 
             if (playedCard.isOneEyed) {
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
+                    if (isChipLocked(newState, targetX, targetY)) {
+                        alert("Cannot remove a marker chip that is already part of a completed SEQUENCE!");
+                        return; 
+                    }
                     newState.board[boardIndex].owner = null; 
                     validMove = true;
                 }
@@ -438,7 +682,15 @@
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
 
-                if (checkWinCondition(newState.board, myPlayer.teamClass, newState.requiredSequences)) {
+                newState.scoredSequences = {};
+                ['team-red', 'team-blue', 'team-green'].forEach(t => {
+                    const seqs = detectSequences(newState.board, t);
+                    if (seqs.length > 0) newState.scoredSequences[t] = seqs;
+                });
+
+                const myTeamSeqs = newState.scoredSequences[myPlayer.teamClass] || [];
+
+                if (myTeamSeqs.length >= newState.requiredSequences) {
                     newState.status = 'WON';
                     newState.winner = myPlayer.teamClass.replace('team-', '');
                 } else {
@@ -446,37 +698,6 @@
                 }
                 gameRef.set(newState);
             }
-        }
-
-        function checkWinCondition(board, teamClass, required) {
-            let totalSequences = 0;
-            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
-            let countedCenters = new Set();
-
-            const getChip = (x, y) => {
-                if (x<0 || x>9 || y<0 || y>9) return null;
-                const sq = board[y * 10 + x];
-                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null; 
-            };
-
-            for (let y=0; y<10; y++) {
-                for (let x=0; x<10; x++) {
-                    dirs.forEach(([dx, dy]) => {
-                        let match = 0, coords = [];
-                        for (let s=0; s<5; s++) {
-                            const cx = x+(dx*s), cy = y+(dy*s);
-                            const chip = getChip(cx, cy);
-                            if (chip === teamClass || chip === 'FREE') { match++; coords.push(`${cx},${cy}`); } 
-                            else break;
-                        }
-                        if (match === 5) {
-                            const centerId = `${coords[2]}-${dx}-${dy}`;
-                            if (!countedCenters.has(centerId)) { totalSequences++; countedCenters.add(centerId); }
-                        }
-                    });
-                }
-            }
-            return totalSequences >= required;
         }
     </script>
 </body>
