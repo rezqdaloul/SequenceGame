@@ -7,7 +7,6 @@
     <style>
         /* --- PREMIUM, CALM COLOR SYSTEM --- */
         :root {
-            /* Dark Mode (Default) */
             --bg: #0f172a;
             --surface: #1e293b;
             --border: #334155;
@@ -21,15 +20,12 @@
             --free-text: #713f12;
             --btn-bg: #3b82f6;
             --btn-text: #ffffff;
-            
-            /* Team Colors - Muted & Professional */
             --team-red: #dc2626;
             --team-blue: #2563eb;
             --team-green: #059669;
         }
 
         .light-mode {
-            /* Light Mode */
             --bg: #f8fafc;
             --surface: #ffffff;
             --border: #e2e8f0;
@@ -39,16 +35,16 @@
             --btn-bg: #0f172a;
         }
 
-        /* --- STRICT NO-SCROLL LAYOUT --- */
+        /* --- STRICT NO-SCROLL VIEWPORT --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg);
             color: var(--text-primary);
             margin: 0;
             padding: 0;
-            height: 100dvh; /* Uses dynamic viewport height to perfectly fit mobile screens */
+            height: 100dvh; 
             width: 100vw;
-            overflow: hidden; /* Mathematically prevents scrolling */
+            overflow: hidden; 
             display: flex;
             justify-content: center;
             transition: background 0.3s ease, color 0.3s ease;
@@ -62,6 +58,7 @@
             flex-direction: column;
             padding: 0.5rem;
             box-sizing: border-box;
+            position: relative;
         }
 
         #lobby, #game {
@@ -71,10 +68,8 @@
             width: 100%;
         }
 
-        /* Lobby Scroll Allowance (Lobby ONLY) */
-        #lobby { overflow-y: auto; padding: 1rem; }
+        #lobby { overflow-y: auto; padding: 1rem; padding-top: 4rem; }
 
-        /* Typography & Inputs */
         h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.5px; }
         h1 { font-size: 1.8rem; margin-bottom: 1.5rem; text-align: center; }
         
@@ -103,33 +98,43 @@
         select:focus, input:focus { border-color: var(--btn-bg); }
 
         /* --- GAME VIEW COMPONENTS --- */
-        /* Header: Fixed Height */
         .header { 
-            flex-shrink: 0; /* Prevents header from shrinking */
+            flex-shrink: 0; 
             display: flex; justify-content: space-between; align-items: center; 
             background: var(--surface); padding: 0.75rem 1rem; border-radius: 12px; 
             border: 1px solid var(--border); border-top: 4px solid transparent; 
             margin-bottom: 0.5rem;
+            position: relative;
         }
         .action-text { color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; margin-top: 2px; }
 
-        /* Board Container: Flex Grow (Takes available space) */
+        /* Center controls (Shifted to empty middle space) */
+        .top-controls { 
+            position: absolute; top: 1.25rem; left: 50%; transform: translateX(-50%); 
+            display: flex; gap: 0.75rem; z-index: 100; 
+        }
+        .icon-btn { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.15); padding: 0; transition: transform 0.1s; }
+        .icon-btn:active { transform: scale(0.9); }
+        .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+
+        /* Board Scaling Engine */
         .board-container {
-            flex-grow: 1; /* Takes all remaining space */
+            flex-grow: 1; 
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 0; /* CRITICAL: Allows flex child to shrink properly */
-            padding: 0.25rem 0;
-            position: relative;
+            min-height: 0; /* Critical for shrinking */
+            width: 100%;
+            padding: 0; 
+            margin: 0.25rem 0;
         }
 
         .board { 
+            width: 100%;
+            max-height: 100%; 
+            aspect-ratio: 1 / 1; 
             display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); gap: 2px; 
             background: var(--border); padding: 4px; border-radius: 10px; 
-            aspect-ratio: 1/1; /* Forces a perfect square */
-            max-height: 100%; /* Never taller than container */
-            max-width: 100%;  /* Never wider than container */
             box-sizing: border-box; position: relative;
         }
         
@@ -144,29 +149,26 @@
         .card-suit { font-size: clamp(0.7rem, 2.5vw, 1.3rem); line-height: 1; margin-top: -1px; }
         .red { color: var(--card-text-red); } .black { color: var(--card-text-black); }
         
-        /* Matte Chips */
         .chip { 
             position: absolute; inset: 3px; border-radius: 50%; opacity: 0.95; 
             border: 2px solid rgba(255,255,255,0.2); z-index: 5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); /* Soft, natural shadow */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
-        /* Player Hand: Fixed Height */
+        /* Player Hand */
         .hand-container {
-            flex-shrink: 0; /* Prevents hand from shrinking */
-            background: var(--surface); padding: 0.75rem; border-radius: 12px; 
-            border: 1px solid var(--border); height: 110px; /* Locked height */
-            display: flex; flex-direction: column; align-items: center; box-sizing: border-box;
+            flex-shrink: 0; 
+            background: var(--surface); padding: 0.5rem 0.75rem; border-radius: 12px; 
+            border: 1px solid var(--border); height: 110px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
         }
         
         .hand { 
-            display: flex; gap: 0.5rem; justify-content: center; align-items: center; 
+            display: flex; gap: 0.4rem; justify-content: center; align-items: center; 
             height: 100%; width: 100%;
         }
         .hand-card { 
-            flex: 1; /* Allows cards to compress horizontally on narrow screens */
-            max-width: 60px; /* Maximum width */
-            height: 100%; max-height: 80px; 
+            flex: 1; min-width: 0; max-width: 65px; height: 100%; max-height: 85px; 
             background: var(--card-bg); border-radius: 6px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; 
             cursor: pointer; position: relative;
@@ -177,9 +179,8 @@
             transform: translateY(-8px); border-color: var(--btn-bg); 
             box-shadow: 0 6px 12px rgba(0,0,0,0.15); z-index: 10; 
         }
-        .jack-label { position: absolute; bottom: 3px; font-size: 0.5rem; font-weight: 600; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; text-transform: uppercase; }
+        .jack-label { position: absolute; bottom: 3px; font-size: 0.5rem; font-weight: 600; background: rgba(0,0,0,0.8); color: white; padding: 2px 4px; border-radius: 4px; text-transform: uppercase; line-height: 1; }
         
-        /* Team Colors Mapping */
         .team-red { background-color: var(--team-red); border-color: var(--team-red); }
         .team-blue { background-color: var(--team-blue); border-color: var(--team-blue); }
         .team-green { background-color: var(--team-green); border-color: var(--team-green); }
@@ -188,18 +189,12 @@
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
         .team-preview-badge { padding: 0 1rem; border-radius: 10px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
 
-        /* Top Bar Controls */
-        .top-controls { position: absolute; top: 1rem; right: 1rem; display: flex; gap: 0.5rem; z-index: 100; }
-        .icon-btn { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.1); padding: 0; }
-        .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
-
-        /* Static Overlay */
         #overlay { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         
-        /* Chat Panel */
+        /* Centralized Chat Panel */
         .chat-panel { 
-            display: none; position: absolute; top: 60px; right: 0; width: 300px; height: 400px; max-height: 60dvh;
-            background: var(--surface); border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); 
+            display: none; position: fixed; top: 5rem; left: 50%; transform: translateX(-50%); width: 95vw; max-width: 400px; height: 450px; max-height: 60dvh;
+            background: var(--surface); border-radius: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.3); 
             flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 101;
         }
         .chat-header-bar { background: var(--border); padding: 12px; font-weight: 600; text-align: center; display: flex; justify-content: space-between; align-items: center; }
@@ -224,24 +219,25 @@
         
         <div class="top-controls">
             <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle">☀️</button>
-            <div id="chat-container" style="display: none; position: relative;">
+            <div style="position: static;">
                 <button class="icon-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></button>
-                <div id="chat-panel" class="chat-panel">
-                    <div class="chat-header-bar">
-                        <span>Team Chat</span>
-                        <span class="close-chat" onclick="toggleChat()">✖</span>
-                    </div>
-                    <div id="chat-messages" class="chat-messages"></div>
-                    <div class="chat-input-area">
-                        <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
-                        <button onclick="sendChat()">Send</button>
-                    </div>
-                </div>
+            </div>
+        </div>
+
+        <div id="chat-panel" class="chat-panel">
+            <div class="chat-header-bar">
+                <span>Team Chat</span>
+                <span class="close-chat" onclick="toggleChat()">✖</span>
+            </div>
+            <div id="chat-messages" class="chat-messages"></div>
+            <div class="chat-input-area">
+                <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
+                <button onclick="sendChat()">Send</button>
             </div>
         </div>
 
         <div id="lobby">
-            <h1>Sequence</h1>
+            <h1>Sequence Live</h1>
             <div class="panel">
                 <h3 style="color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 1rem;">Host a New Game</h3>
                 <select id="player-count" style="margin-bottom: 0.75rem;">
@@ -269,11 +265,11 @@
 
         <div id="game">
             <div id="game-header" class="header">
-                <div>
+                <div style="flex: 1; text-align: left;">
                     <h2 id="turn-indicator" style="margin: 0; font-size: 1.1rem;">Waiting...</h2>
                     <div id="action-hint" class="action-text"></div>
                 </div>
-                <div style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+                <div style="flex: 1; text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
                     Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 600;">0</span><br>
                     <span id="my-identity" style="font-weight: 600; color: var(--text-primary);"></span>
                 </div>
@@ -295,16 +291,13 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
-        // --- THEME TOGGLE LOGIC ---
         function toggleTheme() {
             document.body.classList.toggle('light-mode');
             const icon = document.getElementById('theme-toggle');
             icon.innerText = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
-            // Trigger line redraw in case border sizes/colors shift
             setTimeout(drawSequenceLines, 50);
         }
 
-        // FIREBASE CONFIG - Intact
         const firebaseConfig = {
           apiKey: "AIzaSyCIZmW1u9fFJAXehfPm2_P5s55zzkoFiNQ",
           authDomain: "sequencelive-b2863.firebaseapp.com",
@@ -338,7 +331,6 @@
             'FREE', '5♦', '4♦', '3♦', '2♦', 'A♠', 'K♠', 'Q♠', '10♠', 'FREE'
         ];
 
-        // --- DATABASE LISTENERS ---
         gameRef.on('value', (snapshot) => {
             const data = snapshot.val();
             gameState = data;
@@ -349,7 +341,6 @@
             if (!data || data.status === 'LOBBY') showLobby(data);
             else if (data.status === 'PLAYING') {
                 if (myPlayerId !== null) {
-                    document.getElementById('chat-container').style.display = 'block';
                     renderGame();
                 } else showLobby(data);
             } else if (data.status === 'WON') {
@@ -367,11 +358,9 @@
             displayChatMessage(msg);
         });
 
-        // --- LOBBY LOGIC ---
         function showLobby(data) {
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
-            document.getElementById('chat-container').style.display = 'none';
             myPlayerId = null; 
 
             if (data && (data.status === 'PLAYING' || data.status === 'LOBBY_WAITING')) {
@@ -452,14 +441,12 @@
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
-                document.getElementById('chat-container').style.display = 'block';
                 renderGame();
             });
         }
 
         function endGame() { gameRef.set(null); chatRef.set(null); }
 
-        // --- CHAT SYSTEM ---
         function toggleChat() {
             chatOpen = !chatOpen;
             const panel = document.getElementById('chat-panel');
@@ -496,7 +483,6 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // --- SEQUENCE ENGINE ---
         function detectSequences(board, teamClass) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             const getChip = (x, y) => {
@@ -544,7 +530,6 @@
             return false;
         }
 
-        // --- RENDERING & GAME LOGIC ---
         function renderGame() {
             if (!gameState) return;
             const currentPlayer = gameState.players[gameState.turnIndex];
@@ -561,7 +546,7 @@
             else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
             else {
                 const c = myPlayer.hand[selectedCardIndex];
-                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Remove an opponent's chip.";
+                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Remove opponent's chip.";
                 else if (c.isTwoEyed) hint.innerText = "TWO-EYED JACK: Place chip on open space.";
                 else hint.innerText = "Click matching board space to place.";
             }
@@ -600,7 +585,7 @@
                     if(card.value === 'J') {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">J</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>
-                                         <div class="jack-label">${card.isOneEyed ? 'one eye' : 'two eyes'}</div>`;
+                                         <div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
                     } else {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">${card.value}</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>`;
@@ -611,7 +596,6 @@
             }
         }
 
-        // SVG Drawing Layer
         function drawSequenceLines() {
             const svg = document.getElementById('sequence-lines');
             if (!svg || !gameState || !gameState.scoredSequences) return;
@@ -635,7 +619,6 @@
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                // Calm solid gold line for sequence tracking
                 line.setAttribute('stroke', '#eab308'); 
                 line.setAttribute('stroke-width', '5');
                 line.setAttribute('stroke-linecap', 'round');
