@@ -141,7 +141,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
-        // FIREBASE CONFIG - Integrated per your instructions
+        // FIREBASE CONFIG 
         const firebaseConfig = {
           apiKey: "AIzaSyCIZmW1u9fFJAXehfPm2_P5s55zzkoFiNQ",
           authDomain: "sequencelive-b2863.firebaseapp.com",
@@ -214,13 +214,12 @@
                     seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
                 });
                 
-                updateLobbyTeamColor(); // Trigger preview for default selected seat
+                updateLobbyTeamColor(); 
             } else {
                 document.getElementById('join-section').style.display = 'none';
             }
         }
 
-        // Dynamic Team Color Preview Update
         function updateLobbyTeamColor() {
             if (!gameState || !gameState.players) return;
             const select = document.getElementById('seat-selector');
@@ -254,7 +253,7 @@
             // Professional Fisher-Yates Shuffle
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
-                [deck[i], deck[j]] = [deck[j], deck[i]]; // Swap elements randomly
+                [deck[i], deck[j]] = [deck[j], deck[i]]; 
             }
 
             let cardsToDeal = 7;
@@ -343,6 +342,42 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        // --- SEQUENCE PROTECTION ALGORITHM ---
+        // Prevents removing a chip that is part of a completed 5-in-a-row sequence
+        function isChipLocked(board, boardIndex) {
+            const square = board[boardIndex];
+            if (!square || !square.owner || square.type === 'FREE') return false;
+            
+            const teamClass = square.owner;
+            const targetX = boardIndex % 10;
+            const targetY = Math.floor(boardIndex / 10);
+            
+            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
+            const getChip = (x, y) => {
+                if (x<0 || x>9 || y<0 || y>9) return null;
+                const sq = board[y * 10 + x];
+                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null; 
+            };
+
+            for (let [dx, dy] of dirs) {
+                for (let offset = 0; offset < 5; offset++) {
+                    const startX = targetX - (dx * offset);
+                    const startY = targetY - (dy * offset);
+                    
+                    let match = 0;
+                    for (let s = 0; s < 5; s++) {
+                        const cx = startX + (dx * s);
+                        const cy = startY + (dy * s);
+                        const chip = getChip(cx, cy);
+                        if (chip === teamClass || chip === 'FREE') { match++; } 
+                        else break;
+                    }
+                    if (match === 5) return true;
+                }
+            }
+            return false;
+        }
+
         // --- RENDERING & GAME LOGIC ---
         function renderGame() {
             if (!gameState) return;
@@ -360,7 +395,7 @@
             else if (selectedCardIndex === null) { hint.innerText = "Select a card from your hand."; }
             else {
                 const c = myPlayer.hand[selectedCardIndex];
-                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Click opponent's chip to remove!";
+                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Click opponent's chip to remove (if not locked)!";
                 else if (c.isTwoEyed) hint.innerText = "TWO-EYED JACK: Click empty space to place!";
                 else hint.innerText = "Click matching board space to place.";
             }
@@ -393,7 +428,7 @@
                     if(card.value === 'J') {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">J</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>
-                                         <div class="jack-label">${card.isOneEyed ? 'REMOVE' : 'WILD'}</div>`;
+                                         <div class="jack-label">${card.isOneEyed ? 'one eye' : 'two eyes'}</div>`;
                     } else {
                         div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">${card.value}</span>
                                          <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>`;
@@ -417,6 +452,11 @@
 
             if (playedCard.isOneEyed) {
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
+                    // Sequence Protection Check
+                    if (isChipLocked(newState.board, boardIndex)) {
+                        alert("Cannot remove a marker chip that is already part of a completed SEQUENCE!");
+                        return; // Abort move
+                    }
                     newState.board[boardIndex].owner = null; 
                     validMove = true;
                 }
