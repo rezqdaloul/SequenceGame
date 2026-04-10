@@ -19,7 +19,7 @@
         .header { display: flex; justify-content: space-between; align-items: center; background: var(--panel); padding: 1rem; border-radius: 12px; border-top: 4px solid transparent; margin-top: 3rem; }
         .action-text { color: #fbbf24; font-weight: bold; font-size: 0.9rem; }
         
-        .board { display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; background: var(--board); padding: 8px; border-radius: 12px; aspect-ratio: 1/1; }
+        .board { position: relative; display: grid; grid-template-columns: repeat(10, 1fr); gap: 4px; background: var(--board); padding: 8px; border-radius: 12px; aspect-ratio: 1/1; }
         .square { background: var(--card); border-radius: 4px; display: flex; flex-direction: column; align-items: center; justify-content: center; position: relative; cursor: pointer; user-select: none; }
         .square.free { background: var(--free); color: black; font-weight: bold; font-size: 0.8rem; }
         
@@ -27,7 +27,7 @@
         .card-suit { font-size: clamp(0.8rem, 2.5vw, 1.5rem); line-height: 1; margin-top: -2px; }
         .red { color: #dc2626; } .black { color: #0f172a; }
         
-        .chip { position: absolute; inset: 4px; border-radius: 50%; opacity: 0.9; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); }
+        .chip { position: absolute; inset: 4px; border-radius: 50%; opacity: 0.95; box-shadow: inset 0 2px 4px rgba(0,0,0,0.5); border: 2px solid rgba(255,255,255,0.3); z-index: 5; }
         
         .hand { display: flex; flex-wrap: wrap; gap: 0.5rem; justify-content: center; }
         .hand-card { width: 60px; height: 85px; background: var(--card); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: center; cursor: pointer; transition: transform 0.2s; border: 2px solid transparent; position: relative; }
@@ -39,7 +39,6 @@
         .team-blue { background-color: #3b82f6; border-color: #3b82f6; }
         .team-green { background-color: #10b981; border-color: #10b981; }
 
-        /* Dynamic Lobby Badge */
         .seat-selection-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
         .team-preview-badge { padding: 0 1rem; border-radius: 6px; font-weight: bold; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; text-shadow: 0 1px 2px rgba(0,0,0,0.5); box-shadow: inset 0 2px 4px rgba(0,0,0,0.2); }
@@ -130,7 +129,9 @@
                 <span id="my-identity" style="font-weight: bold; color: white;"></span>
             </div>
         </div>
-        <div id="board" class="board"></div>
+        <div id="board" class="board">
+            <svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>
+        </div>
         <div class="panel">
             <h3 id="hand-title">Your Hand</h3>
             <div id="hand" class="hand"></div>
@@ -188,7 +189,8 @@
                     renderGame();
                 } else showLobby(data);
             } else if (data.status === 'WON') {
-                alert(`GAME OVER! ${data.winner.toUpperCase()} TEAM WINS!`);
+                renderGame(); // Force final board render to show the winning line
+                setTimeout(() => alert(`GAME OVER! ${data.winner.toUpperCase()} TEAM WINS!`), 500);
                 endGame();
             }
         });
@@ -198,7 +200,7 @@
             displayChatMessage(msg);
         });
 
-        // --- LOBBY LOGIC & TEAM PREVIEW ---
+        // --- LOBBY LOGIC ---
         function showLobby(data) {
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
@@ -213,7 +215,6 @@
                 data.players.forEach(p => {
                     seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`;
                 });
-                
                 updateLobbyTeamColor(); 
             } else {
                 document.getElementById('join-section').style.display = 'none';
@@ -225,7 +226,6 @@
             const select = document.getElementById('seat-selector');
             const playerId = parseInt(select.value);
             const player = gameState.players[playerId];
-            
             if (player) {
                 const badge = document.getElementById('lobby-team-preview');
                 badge.className = `team-preview-badge ${player.teamClass}`;
@@ -233,14 +233,13 @@
             }
         }
 
-        const SUITS = ['♠', '♥', '♦', '♣'];
-        
         function hostGame() {
             const count = parseInt(document.getElementById('player-count').value);
             const numTeams = (count === 3 || count === 6) ? 3 : 2;
             const teams = ['team-red', 'team-blue', 'team-green'];
             
             let deck = [];
+            const SUITS = ['♠', '♥', '♦', '♣'];
             for (let i = 0; i < 2; i++) {
                 SUITS.forEach(suit => {
                     ['2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'].forEach(value => {
@@ -250,7 +249,6 @@
                 });
             }
 
-            // Professional Fisher-Yates Shuffle
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]]; 
@@ -263,10 +261,7 @@
             let players = [];
             for(let i = 0; i < count; i++) {
                 players.push({ 
-                    id: i, 
-                    name: `Player ${i+1}`, 
-                    teamClass: teams[i % numTeams], 
-                    hand: deck.splice(0, cardsToDeal) 
+                    id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal) 
                 });
             }
 
@@ -279,7 +274,7 @@
 
             chatRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board
+                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}
             });
         }
 
@@ -315,12 +310,7 @@
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text || myPlayerId === null) return;
-            
-            chatRef.push({
-                senderId: myPlayerId,
-                senderName: gameState.players[myPlayerId].name,
-                text: text
-            });
+            chatRef.push({ senderId: myPlayerId, senderName: gameState.players[myPlayerId].name, text: text });
             input.value = '';
         }
 
@@ -328,11 +318,9 @@
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
             const isMine = msg.senderId === myPlayerId;
-            
             div.className = `msg ${isMine ? 'mine' : 'others'}`;
             div.innerHTML = `<span class="msg-name">${msg.senderName}</span>${msg.text}`;
             container.appendChild(div);
-            
             if (!chatOpen && !isMine) document.getElementById('chat-badge').style.display = 'block';
             scrollToBottom();
         }
@@ -342,37 +330,63 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // --- SEQUENCE PROTECTION ALGORITHM ---
-        // Prevents removing a chip that is part of a completed 5-in-a-row sequence
-        function isChipLocked(board, boardIndex) {
-            const square = board[boardIndex];
-            if (!square || !square.owner || square.type === 'FREE') return false;
-            
-            const teamClass = square.owner;
-            const targetX = boardIndex % 10;
-            const targetY = Math.floor(boardIndex / 10);
-            
+        // --- SEQUENCE MATHEMATICS ENGINE ---
+        // Returns an array of coordinate arrays for all valid, non-overlapping sequences for a team
+        function detectSequences(board, teamClass) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             const getChip = (x, y) => {
                 if (x<0 || x>9 || y<0 || y>9) return null;
                 const sq = board[y * 10 + x];
-                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null; 
+                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null;
             };
 
-            for (let [dx, dy] of dirs) {
-                for (let offset = 0; offset < 5; offset++) {
-                    const startX = targetX - (dx * offset);
-                    const startY = targetY - (dy * offset);
-                    
-                    let match = 0;
-                    for (let s = 0; s < 5; s++) {
-                        const cx = startX + (dx * s);
-                        const cy = startY + (dy * s);
-                        const chip = getChip(cx, cy);
-                        if (chip === teamClass || chip === 'FREE') { match++; } 
-                        else break;
+            let foundSequences = [];
+            let lockedChips = new Set(); 
+
+            for (let y=0; y<10; y++) {
+                for (let x=0; x<10; x++) {
+                    for (let [dx, dy] of dirs) {
+                        let match = 0;
+                        let coords = [];
+                        let lockedCount = 0;
+
+                        for (let s=0; s<5; s++) {
+                            const cx = x + (dx*s);
+                            const cy = y + (dy*s);
+                            const chip = getChip(cx, cy);
+                            
+                            // FREE boxes actively act as wildcard chips for any sequence algorithm
+                            if (chip === teamClass || chip === 'FREE') {
+                                match++;
+                                coords.push(`${cx},${cy}`);
+                                // Calculate overlap. FREE boxes are completely exempt from the overlap lock rule.
+                                if (chip !== 'FREE' && lockedChips.has(`${cx},${cy}`)) lockedCount++;
+                            } else break;
+                        }
+
+                        // Must be 5 chips, and can only share a maximum of 1 previously locked non-free chip
+                        if (match === 5 && lockedCount <= 1) {
+                            foundSequences.push(coords);
+                            coords.forEach(c => {
+                                const parseX = parseInt(c.split(',')[0]);
+                                const parseY = parseInt(c.split(',')[1]);
+                                if (getChip(parseX, parseY) !== 'FREE') {
+                                    lockedChips.add(c);
+                                }
+                            });
+                        }
                     }
-                    if (match === 5) return true;
+                }
+            }
+            return foundSequences;
+        }
+
+        function isChipLocked(gameState, x, y) {
+            if (!gameState.scoredSequences) return false;
+            const targetStr = `${x},${y}`;
+            for (let team in gameState.scoredSequences) {
+                for (let seq of gameState.scoredSequences[team]) {
+                    if (seq.includes(targetStr)) return true;
                 }
             }
             return false;
@@ -401,10 +415,17 @@
             }
 
             const boardDiv = document.getElementById('board');
-            boardDiv.innerHTML = '';
+            // Retain the SVG line container, clear everything else
+            boardDiv.innerHTML = '<svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>';
+            
             gameState.board.forEach((square, index) => {
                 const div = document.createElement('div');
                 div.className = `square ${square.type === 'FREE' ? 'free' : ''}`;
+                
+                // Assign coordinates for the SVG Line drawer
+                const x = index % 10;
+                const y = Math.floor(index / 10);
+                div.id = `sq-${x}-${y}`;
                 
                 if (square.type === 'FREE') div.innerText = 'FREE';
                 else {
@@ -417,6 +438,9 @@
                 div.onclick = () => handleBoardClick(index);
                 boardDiv.appendChild(div);
             });
+
+            // Draw the slim yellow line over active sequences
+            setTimeout(drawSequenceLines, 50);
 
             const handDiv = document.getElementById('hand');
             handDiv.innerHTML = '';
@@ -439,6 +463,44 @@
             }
         }
 
+        // SVG Yellow Line Generator
+        function drawSequenceLines() {
+            const svg = document.getElementById('sequence-lines');
+            if (!svg) return;
+            svg.innerHTML = '';
+            if (!gameState || !gameState.scoredSequences) return;
+
+            const boardRect = document.getElementById('board').getBoundingClientRect();
+
+            Object.values(gameState.scoredSequences).flat().forEach(seq => {
+                const startSq = document.getElementById(`sq-${seq[0].replace(',','-')}`);
+                const endSq = document.getElementById(`sq-${seq[4].replace(',','-')}`);
+                if (!startSq || !endSq) return;
+
+                const sRect = startSq.getBoundingClientRect();
+                const eRect = endSq.getBoundingClientRect();
+
+                // Calculate center points relative to the board container
+                const x1 = sRect.left - boardRect.left + (sRect.width / 2);
+                const y1 = sRect.top - boardRect.top + (sRect.height / 2);
+                const x2 = eRect.left - boardRect.left + (eRect.width / 2);
+                const y2 = eRect.top - boardRect.top + (eRect.height / 2);
+
+                const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
+                line.setAttribute('x1', x1);
+                line.setAttribute('y1', y1);
+                line.setAttribute('x2', x2);
+                line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#fde047'); // Vibrant Yellow
+                line.setAttribute('stroke-width', '5');
+                line.setAttribute('stroke-linecap', 'round');
+                svg.appendChild(line);
+            });
+        }
+        
+        // Ensure lines stay accurate if phone orientation changes
+        window.addEventListener('resize', drawSequenceLines);
+
         function handleBoardClick(boardIndex) {
             if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null) return; 
 
@@ -446,16 +508,18 @@
             const myPlayer = newState.players[myPlayerId];
             const playedCard = myPlayer.hand[selectedCardIndex];
             const targetSquare = newState.board[boardIndex];
+            
+            const targetX = boardIndex % 10;
+            const targetY = Math.floor(boardIndex / 10);
 
             let validMove = false;
             if (targetSquare.type === 'FREE') return; 
 
             if (playedCard.isOneEyed) {
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
-                    // Sequence Protection Check
-                    if (isChipLocked(newState.board, boardIndex)) {
+                    if (isChipLocked(newState, targetX, targetY)) {
                         alert("Cannot remove a marker chip that is already part of a completed SEQUENCE!");
-                        return; // Abort move
+                        return; 
                     }
                     newState.board[boardIndex].owner = null; 
                     validMove = true;
@@ -478,7 +542,16 @@
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
 
-                if (checkWinCondition(newState.board, myPlayer.teamClass, newState.requiredSequences)) {
+                // Run detection for all active teams and save state
+                newState.scoredSequences = {};
+                ['team-red', 'team-blue', 'team-green'].forEach(t => {
+                    const seqs = detectSequences(newState.board, t);
+                    if (seqs.length > 0) newState.scoredSequences[t] = seqs;
+                });
+
+                const myTeamSeqs = newState.scoredSequences[myPlayer.teamClass] || [];
+
+                if (myTeamSeqs.length >= newState.requiredSequences) {
                     newState.status = 'WON';
                     newState.winner = myPlayer.teamClass.replace('team-', '');
                 } else {
@@ -486,37 +559,6 @@
                 }
                 gameRef.set(newState);
             }
-        }
-
-        function checkWinCondition(board, teamClass, required) {
-            let totalSequences = 0;
-            const dirs = [[1,0], [0,1], [1,1], [1,-1]];
-            let countedCenters = new Set();
-
-            const getChip = (x, y) => {
-                if (x<0 || x>9 || y<0 || y>9) return null;
-                const sq = board[y * 10 + x];
-                return sq ? (sq.type === 'FREE' ? 'FREE' : sq.owner) : null; 
-            };
-
-            for (let y=0; y<10; y++) {
-                for (let x=0; x<10; x++) {
-                    dirs.forEach(([dx, dy]) => {
-                        let match = 0, coords = [];
-                        for (let s=0; s<5; s++) {
-                            const cx = x+(dx*s), cy = y+(dy*s);
-                            const chip = getChip(cx, cy);
-                            if (chip === teamClass || chip === 'FREE') { match++; coords.push(`${cx},${cy}`); } 
-                            else break;
-                        }
-                        if (match === 5) {
-                            const centerId = `${coords[2]}-${dx}-${dy}`;
-                            if (!countedCenters.has(centerId)) { totalSequences++; countedCenters.add(centerId); }
-                        }
-                    });
-                }
-            }
-            return totalSequences >= required;
         }
     </script>
 </body>
