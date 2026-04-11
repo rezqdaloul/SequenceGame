@@ -68,10 +68,27 @@
             width: 100%;
         }
 
-        #lobby { overflow-y: auto; padding: 1rem; padding-top: 4rem; }
+        /* Perfectly Centered Lobby */
+        #lobby { 
+            overflow-y: auto; 
+            padding: 1rem; 
+            display: flex; 
+            flex-direction: column; 
+            align-items: center; /* Horizontally centers content */
+            width: 100%;
+            box-sizing: border-box;
+            margin: auto;
+        }
+        
+        #lobby > h1 { text-align: center; width: 100%; margin-bottom: 2rem; }
+        #lobby > .panel { 
+            width: 100%; 
+            max-width: 400px; /* Constrains width to look premium on wide screens */
+            box-sizing: border-box;
+        }
 
         h1, h2, h3 { margin: 0; font-weight: 600; letter-spacing: -0.5px; }
-        h1 { font-size: 1.8rem; margin-bottom: 1.5rem; text-align: center; }
+        h1 { font-size: 1.8rem; }
         
         .panel { 
             background: var(--surface); 
@@ -108,12 +125,18 @@
         }
         .action-text { color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; margin-top: 2px; }
 
-        /* Controls shifted to the left empty space to prevent overlap */
+        /* Draggable Controls Styling */
         .top-controls { 
-            position: absolute; top: 1.25rem; left: 38%; transform: translateX(-50%); 
-            display: flex; gap: 0.75rem; z-index: 100; 
+            position: fixed; 
+            top: 25px; 
+            /* Centered default position */
+            left: calc(50% - 46px); 
+            display: flex; gap: 0.75rem; z-index: 300; 
+            touch-action: none; /* Prevents scroll interference while dragging */
+            cursor: grab;
         }
-        .icon-btn { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.15); padding: 0; transition: transform 0.1s; }
+        .top-controls:active { cursor: grabbing; }
+        .icon-btn { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 4px 10px rgba(0,0,0,0.3); padding: 0; transition: transform 0.1s; }
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
@@ -189,7 +212,7 @@
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
         .team-preview-badge { padding: 0 1rem; border-radius: 10px; font-weight: 600; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
 
-        #overlay { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 200; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        #overlay { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 400; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         
         /* Centralized Chat Panel */
         .chat-panel { 
@@ -217,10 +240,10 @@
 
     <div id="app-container">
         
-        <div class="top-controls">
-            <button class="icon-btn" onclick="toggleTheme()" id="theme-toggle">☀️</button>
-            <div style="position: static;">
-                <button class="icon-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></button>
+        <div id="floating-controls" class="top-controls">
+            <button class="icon-btn" id="theme-toggle-btn">☀️</button>
+            <div style="position: relative;">
+                <button class="icon-btn" id="chat-toggle-btn">💬<span id="chat-badge" class="badge">!</span></button>
             </div>
         </div>
 
@@ -238,6 +261,7 @@
 
         <div id="lobby">
             <h1>Sequence Live</h1>
+            
             <div class="panel">
                 <h3 style="color: var(--text-secondary); font-size: 0.9rem; text-transform: uppercase; margin-bottom: 1rem;">Host a New Game</h3>
                 <select id="player-count" style="margin-bottom: 0.75rem;">
@@ -291,13 +315,67 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
-        function toggleTheme() {
+        // --- DRAG AND DROP PHYSICS ENGINE ---
+        const dragItem = document.getElementById("floating-controls");
+        let active = false;
+        let currentX = 0, currentY = 0, initialX = 0, initialY = 0;
+        let xOffset = 0, yOffset = 0;
+        let isDraggingMove = false; // Differentiates a click from a drag
+
+        // Button Event Listeners (Guarded against dragging)
+        document.getElementById('theme-toggle-btn').addEventListener('click', (e) => {
+            if (isDraggingMove) return;
             document.body.classList.toggle('light-mode');
-            const icon = document.getElementById('theme-toggle');
-            icon.innerText = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
+            e.currentTarget.innerText = document.body.classList.contains('light-mode') ? '🌙' : '☀️';
             setTimeout(drawSequenceLines, 50);
+        });
+
+        document.getElementById('chat-toggle-btn').addEventListener('click', (e) => {
+            if (isDraggingMove) return;
+            toggleChat();
+        });
+
+        function dragStart(e) {
+            if (!e.target.closest('#floating-controls')) return;
+            const touch = e.type.includes("touch") ? e.touches[0] : e;
+            initialX = touch.clientX - xOffset;
+            initialY = touch.clientY - yOffset;
+            active = true;
+            isDraggingMove = false; // Reset on new touch
         }
 
+        function drag(e) {
+            if (active) {
+                const touch = e.type.includes("touch") ? e.touches[0] : e;
+                currentX = touch.clientX - initialX;
+                currentY = touch.clientY - initialY;
+                
+                // If finger moves more than 4px, it's a drag, not a click
+                if(Math.abs(currentX - xOffset) > 4 || Math.abs(currentY - yOffset) > 4) {
+                    isDraggingMove = true;
+                }
+
+                xOffset = currentX;
+                yOffset = currentY;
+                // Apply drag translation (ignoring the original centering CSS logic)
+                dragItem.style.transform = `translate3d(${currentX}px, ${currentY}px, 0)`;
+            }
+        }
+
+        function dragEnd(e) {
+            active = false;
+        }
+
+        // Passive listeners ensure high performance on mobile
+        document.addEventListener("touchstart", dragStart, { passive: true });
+        document.addEventListener("touchmove", drag, { passive: true });
+        document.addEventListener("touchend", dragEnd);
+        document.addEventListener("mousedown", dragStart);
+        document.addEventListener("mousemove", drag);
+        document.addEventListener("mouseup", dragEnd);
+
+
+        // --- FIREBASE CONFIGURATION ---
         const firebaseConfig = {
           apiKey: "AIzaSyCIZmW1u9fFJAXehfPm2_P5s55zzkoFiNQ",
           authDomain: "sequencelive-b2863.firebaseapp.com",
@@ -336,7 +414,10 @@
             gameState = data;
             
             const overlay = document.getElementById('overlay');
-            if(overlay.style.display !== 'none') { overlay.style.display = 'none'; }
+            // Safely clear loading overlays generated by hostGame
+            if(overlay.style.display !== 'none' && overlay.innerText !== 'Joining...') { 
+                overlay.style.display = 'none'; 
+            }
 
             if (!data || data.status === 'LOBBY') {
                 showLobby(data);
@@ -347,9 +428,7 @@
                     showLobby(data);
                 }
             } else if (data.status === 'WON') {
-                // Prevent crash if a user refreshes during the 'WON' state
                 if (myPlayerId !== null) renderGame(); 
-                
                 setTimeout(() => {
                     overlay.innerHTML = `<h2 style="font-size: 2rem; margin-bottom: 1rem;">🏆 ${data.winner.toUpperCase()} TEAM WINS!</h2><button style="max-width:200px; margin-top:1rem;" onclick="endGame()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
@@ -443,14 +522,19 @@
             document.getElementById('overlay').innerHTML = `<h2>Joining...</h2>`;
 
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
+                // Explicitly hide the joining overlay here. 
+                // This fixes the bug where joining with the default name doesn't trigger a Firebase data change.
+                document.getElementById('overlay').style.display = 'none';
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
                 renderGame();
+            }).catch(error => {
+                alert("Connection failed. Please try again.");
+                document.getElementById('overlay').style.display = 'none';
             });
         }
 
         function endGame() { 
-            // Setting the database to null automatically brings all connected players back to the lobby simultaneously 
             gameRef.set(null); 
             chatRef.set(null); 
         }
