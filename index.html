@@ -108,9 +108,9 @@
         }
         .action-text { color: var(--text-secondary); font-weight: 500; font-size: 0.85rem; margin-top: 2px; }
 
-        /* Center controls (Shifted to empty middle space) */
+        /* Controls shifted to the left empty space to prevent overlap */
         .top-controls { 
-            position: absolute; top: 1.25rem; left: 50%; transform: translateX(-50%); 
+            position: absolute; top: 1.25rem; left: 38%; transform: translateX(-50%); 
             display: flex; gap: 0.75rem; z-index: 100; 
         }
         .icon-btn { background: var(--surface); color: var(--text-primary); border: 1px solid var(--border); border-radius: 50%; width: 42px; height: 42px; display: flex; align-items: center; justify-content: center; cursor: pointer; font-size: 1.2rem; box-shadow: 0 2px 5px rgba(0,0,0,0.15); padding: 0; transition: transform 0.1s; }
@@ -123,7 +123,7 @@
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 0; /* Critical for shrinking */
+            min-height: 0; 
             width: 100%;
             padding: 0; 
             margin: 0.25rem 0;
@@ -338,18 +338,22 @@
             const overlay = document.getElementById('overlay');
             if(overlay.style.display !== 'none') { overlay.style.display = 'none'; }
 
-            if (!data || data.status === 'LOBBY') showLobby(data);
-            else if (data.status === 'PLAYING') {
+            if (!data || data.status === 'LOBBY') {
+                showLobby(data);
+            } else if (data.status === 'PLAYING') {
                 if (myPlayerId !== null) {
                     renderGame();
-                } else showLobby(data);
+                } else {
+                    showLobby(data);
+                }
             } else if (data.status === 'WON') {
-                renderGame(); 
+                // Prevent crash if a user refreshes during the 'WON' state
+                if (myPlayerId !== null) renderGame(); 
+                
                 setTimeout(() => {
-                    const overlay = document.getElementById('overlay');
-                    overlay.innerHTML = `<h2 style="font-size: 2rem; margin-bottom: 1rem;">🏆 ${data.winner.toUpperCase()} TEAM WINS!</h2><button style="max-width:200px; margin-top:1rem;" onclick="location.reload()">Back to Lobby</button>`;
+                    overlay.innerHTML = `<h2 style="font-size: 2rem; margin-bottom: 1rem;">🏆 ${data.winner.toUpperCase()} TEAM WINS!</h2><button style="max-width:200px; margin-top:1rem;" onclick="endGame()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
-                }, 1000);
+                }, myPlayerId !== null ? 1000 : 0);
             }
         });
 
@@ -445,7 +449,11 @@
             });
         }
 
-        function endGame() { gameRef.set(null); chatRef.set(null); }
+        function endGame() { 
+            // Setting the database to null automatically brings all connected players back to the lobby simultaneously 
+            gameRef.set(null); 
+            chatRef.set(null); 
+        }
 
         function toggleChat() {
             chatOpen = !chatOpen;
