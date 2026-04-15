@@ -5,45 +5,47 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sequence Live</title>
     <style>
-        /* --- MODERN "EASY" UI COLOR SYSTEM --- */
+        /* --- PREMIUM SLATE & GOLD "EASY" UI (Differentiating Version) --- */
         :root {
-            --bg: #F4F7F8; 
-            --surface: #FFFFFF; 
-            --border: #E5E7EB; 
-            --text-primary: #111827; 
+            /* Palette: Stark readable palette with Muted Gold accents */
+            --bg: #F0F4F7; /* Off-slate background */
+            --surface: #FFFFFF; /* White floating cards */
+            --border: #D1D5DB; 
+            --text-primary: #1F2937; 
             --text-secondary: #6B7280; 
             
-            --primary: #005E60; 
-            --primary-hover: #004A4D;
-            --primary-light: #E0F2F1; 
+            --primary: #C7A17A; /* Muted proprietary Gold */
+            --primary-hover: #A08160;
+            --primary-light: #F9F1E6; 
             
-            --board-bg: #F9FAFB; 
+            --board-bg: #FFFFFF;
             --card-bg: #FFFFFF;
             --card-text-black: #111827;
-            --card-text-red: #DC2626;
-            --free-bg: #F59E0B;
+            --card-text-red: #B91C1C;
+            --free-bg: #C7A17A; /* Gold free spaces */
             --free-text: #FFFFFF;
             
-            --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.06); 
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05); 
             
-            --team-red: #EF4444;
-            --team-blue: #3B82F6;
-            --team-green: #10B981;
+            /* Clean Matte Team Colors */
+            --team-red: #B91C1C; /* Crimson */
+            --team-blue: #1E40AF; /* Royal */
+            --team-green: #065F46; /* Forest */
         }
 
         .dark-mode {
-            --bg: #0F172A;
-            --surface: #1E293B;
-            --border: #334155;
-            --text-primary: #F8FAFC;
-            --text-secondary: #94A3B8;
-            --board-bg: #0F172A;
-            --card-bg: #F8FAFC; 
-            --shadow-soft: 0 12px 36px rgba(0, 0, 0, 0.4);
-            --primary-light: rgba(0, 94, 96, 0.3);
+            --bg: #111827; /* Near black slate */
+            --surface: #1F2937; 
+            --border: #374151;
+            --text-primary: #F9FAFB;
+            --text-secondary: #9CA3AF;
+            --board-bg: #111827;
+            --card-bg: #F9FAFB; 
+            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
+            --primary-light: rgba(199, 161, 122, 0.15);
         }
 
-        /* --- STRICT NO-SCROLL VIEWPORT --- */
+        /* --- STRICT NO-SCROLL VIEWPORT MATRIX --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             background: var(--bg);
@@ -90,7 +92,7 @@
         
         #lobby > h1 { 
             text-align: center; width: 100%; margin-bottom: 2rem; 
-            color: var(--primary); font-size: 2rem; font-weight: 800; letter-spacing: -0.5px;
+            color: var(--primary); font-size: 2rem; font-weight: 800; letter-spacing: -1px;
         }
         #lobby > .panel { 
             width: 100%; 
@@ -103,7 +105,7 @@
         .panel { 
             background: var(--surface); 
             padding: 2rem 1.5rem; 
-            border-radius: 24px; 
+            border-radius: 20px; 
             border: none;
             box-shadow: var(--shadow-soft); 
             margin-bottom: 1rem;
@@ -113,14 +115,14 @@
         button { 
             width: 100%; padding: 1rem; background: var(--primary); color: #FFFFFF; 
             border: none; border-radius: 999px; 
-            font-size: 1.05rem; font-weight: 600; 
+            font-size: 1rem; font-weight: 700; 
             cursor: pointer; margin-top: 0.5rem; 
             transition: background 0.2s, transform 0.1s;
         }
         button:active { transform: scale(0.98); background: var(--primary-hover); }
         
         select, input { 
-            width: 100%; padding: 1rem 1.2rem; border-radius: 14px; border: 1px solid var(--border); 
+            width: 100%; padding: 1rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); 
             background: var(--bg); color: var(--text-primary); box-sizing: border-box; font-size: 1rem; 
             outline: none; transition: border-color 0.2s, background 0.3s;
             font-weight: 500;
@@ -131,12 +133,12 @@
         .header { 
             flex-shrink: 0; 
             display: flex; justify-content: space-between; align-items: center; 
-            background: var(--surface); padding: 1rem 1.25rem; border-radius: 20px; 
-            box-shadow: var(--shadow-soft); border-bottom: 4px solid transparent; 
+            background: var(--surface); padding: 1rem; border-radius: 16px; 
+            box-shadow: var(--shadow-soft); border-top: 3px solid transparent; 
             margin-bottom: 0.5rem;
             position: relative;
         }
-        .action-text { color: var(--primary); font-weight: 600; font-size: 0.85rem; margin-top: 4px; }
+        .action-text { color: var(--primary); font-weight: 700; font-size: 0.85rem; margin-top: 4px; }
 
         .top-controls { 
             position: fixed; 
@@ -151,11 +153,12 @@
             background: var(--surface); color: var(--text-primary); border: none; 
             border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; 
             justify-content: center; cursor: pointer; font-size: 1.2rem; 
-            box-shadow: 0 4px 12px rgba(0,0,0,0.1); padding: 0; transition: transform 0.1s; 
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 0; transition: transform 0.1s; 
         }
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
+        /* Board Scaling Matrix */
         .board-container {
             flex-grow: 1; 
             display: flex;
@@ -171,8 +174,8 @@
             width: 100%;
             max-height: 100%; 
             aspect-ratio: 1 / 1; 
-            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); gap: 3px; 
-            background: var(--border); padding: 6px; border-radius: 16px; 
+            display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); gap: 2px; 
+            background: var(--border); padding: 4px; border-radius: 12px; 
             box-sizing: border-box; position: relative;
             box-shadow: var(--shadow-soft);
         }
@@ -188,16 +191,18 @@
         .card-suit { font-size: clamp(0.7rem, 2.5vw, 1.3rem); line-height: 1; margin-top: -1px; }
         .red { color: var(--card-text-red); } .black { color: var(--card-text-black); }
         
+        /* Matte Chip Design */
         .chip { 
             position: absolute; inset: 2px; border-radius: 50%; opacity: 0.95; 
-            border: 2px solid rgba(255,255,255,0.4); z-index: 5;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.2); 
+            border: 1px solid rgba(255,255,255,0.2); z-index: 5;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
+        /* Player Hand Redesign: "Full Card View" Simulation */
         .hand-container {
             flex-shrink: 0; 
-            background: var(--surface); padding: 0.5rem 0.75rem; border-radius: 20px; 
-            box-shadow: var(--shadow-soft); height: 110px; 
+            background: var(--surface); padding: 0.5rem 0.75rem; border-radius: 16px; 
+            box-shadow: var(--shadow-soft); height: 115px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
         }
         
@@ -206,18 +211,26 @@
             height: 100%; width: 100%;
         }
         .hand-card { 
-            flex: 1; min-width: 0; max-width: 65px; height: 100%; max-height: 85px; 
-            background: var(--card-bg); border-radius: 8px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: center; 
+            flex: 1; min-width: 0; max-width: 65px; height: 100%; max-height: 90px; 
+            background: var(--card-bg); border-radius: 6px; 
+            display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
             cursor: pointer; position: relative;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.08); border: 2px solid var(--border);
+            box-shadow: 0 2px 5px rgba(0,0,0,0.08); border: 2px solid var(--border);
             transition: transform 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
+            padding: 4px; box-sizing: border-box;
         }
+        /* Top Left and Bottom Right Suits for Card Feel */
+        .hand-card .rich-suit-tl { position: absolute; top: 4px; left: 4px; font-size: 0.6rem; font-weight: 800; line-height: 1; }
+        .hand-card .rich-suit-br { position: absolute; bottom: 4px; right: 4px; font-size: 0.6rem; font-weight: 800; line-height: 1; transform: rotate(180deg); }
+        
+        /* Center Graphic */
+        .hand-card .card-val-rich { font-size: clamp(1rem, 3.5vw, 1.8rem); font-weight: 900; line-height: 1; margin: auto; }
+
         .hand-card.selected { 
             transform: translateY(-10px); border-color: var(--primary); 
-            box-shadow: 0 8px 16px rgba(0, 94, 96, 0.2); z-index: 10; 
+            box-shadow: 0 8px 16px rgba(199, 161, 122, 0.2); z-index: 10; 
         }
-        .jack-label { position: absolute; bottom: 4px; font-size: 0.5rem; font-weight: 700; background: var(--primary); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; line-height: 1; }
+        .jack-label { position: absolute; bottom: 6px; font-size: 0.45rem; font-weight: 700; background: var(--text-primary); color: white; padding: 2px 6px; border-radius: 4px; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px;}
         
         .team-red { background-color: var(--team-red); border-color: var(--team-red); }
         .team-blue { background-color: var(--team-blue); border-color: var(--team-blue); }
@@ -225,23 +238,23 @@
 
         .seat-selection-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
-        .team-preview-badge { padding: 0 1rem; border-radius: 12px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
+        .team-preview-badge { padding: 0 1rem; border-radius: 10px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
 
         #overlay { display: flex; position: fixed; inset: 0; background: var(--bg); z-index: 400; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         
         .chat-panel { 
             display: none; position: fixed; top: 5rem; left: 50%; transform: translateX(-50%); width: 95vw; max-width: 400px; height: 450px; max-height: 60dvh;
-            background: var(--surface); border-radius: 20px; box-shadow: 0 20px 40px rgba(0,0,0,0.15); 
+            background: var(--surface); border-radius: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.15); 
             flex-direction: column; overflow: hidden; border: none; z-index: 101;
         }
         .chat-header-bar { background: var(--primary-light); color: var(--primary); padding: 16px; font-weight: 700; text-align: center; display: flex; justify-content: space-between; align-items: center; }
         .close-chat { cursor: pointer; color: var(--primary); font-size: 1.2rem; }
-        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
-        .msg { padding: 10px 14px; border-radius: 16px; max-width: 85%; font-size: 0.95rem; word-wrap: break-word; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
-        .msg.mine { background: var(--primary); align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
-        .msg.others { background: var(--bg); align-self: flex-start; color: var(--text-primary); border-bottom-left-radius: 4px; }
-        .msg-name { font-size: 0.65rem; opacity: 0.8; margin-bottom: 4px; display: block; font-weight: 700; }
-        .chat-input-area { display: flex; padding: 12px; border-top: 1px solid var(--border); gap: 8px; background: var(--surface); }
+        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+        .msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; font-size: 0.95rem; word-wrap: break-word; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+        .msg.mine { background: var(--primary); align-self: flex-end; color: white; border-bottom-right-radius: 3px; }
+        .msg.others { background: var(--bg); align-self: flex-start; color: var(--text-primary); border-bottom-left-radius: 3px; }
+        .msg-name { font-size: 0.65rem; opacity: 0.8; margin-bottom: 2px; display: block; font-weight: 700; }
+        .chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--border); gap: 8px; background: var(--surface); }
         .chat-input-area input { margin-bottom: 0; border-radius: 999px; padding: 0.8rem 1rem; border: none; background: var(--bg); }
         .chat-input-area button { margin-top: 0; width: auto; border-radius: 999px; padding: 0.8rem 1.4rem; }
     </style>
@@ -268,7 +281,7 @@
             </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
+                <input text="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
                 <button onclick="sendChat()">Send</button>
             </div>
         </div>
@@ -277,19 +290,24 @@
             <h1>Sequence Live</h1>
             
             <div class="panel">
-                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Host a New Game</h3>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1rem;">Set it up for your friends.</p>
+                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Create / Join a Room</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1.25rem;">Enter a Room ID to start or join a game.</p>
+                
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">Room ID:</label>
+                <input text="text" id="room-id-input" placeholder="e.g. MyGameRoom" style="margin-bottom: 1rem;" />
+
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">Player Count (if hosting):</label>
                 <select id="player-count" style="margin-bottom: 1rem;">
                     <option value="2">2 Players (Red vs Blue)</option>
                     <option value="3">3 Players (Red vs Blue vs Green)</option>
                     <option value="4">4 Players (2 Teams of 2)</option>
                     <option value="6">6 Players (3 Teams of 2)</option>
                 </select>
-                <button onclick="hostGame()">Create Game</button>
+                <button onclick="selectRoom()">Find Game</button>
             </div>
             
             <div class="panel" id="join-section" style="display: none;">
-                <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1.5rem;">Active Game Found!</h3>
+                <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1.25rem;">Room: <span id="lobby-room-name-display" style="font-weight: 800;">...</span></h3>
                 
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">1. Choose your seat:</label>
                 <div class="seat-selection-row">
@@ -298,10 +316,10 @@
                 </div>
                 
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">2. Enter your name:</label>
-                <input type="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
+                <input text="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
                 
                 <button onclick="joinGame()">Join Game</button>
-                <button style="background: transparent; color: var(--text-secondary); box-shadow: none; margin-top: 0.5rem;" onclick="endGame()">Reset Server</button>
+                <button style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 0.5rem;" onclick="endGame()">Reset Server</button>
             </div>
         </div>
 
@@ -312,7 +330,7 @@
                     <div id="action-hint" class="action-text"></div>
                 </div>
                 <div style="flex: 1; text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
-                    Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 700;">0</span><br>
+                    Room: <span id="game-room-name-display" style="color: var(--text-primary); font-weight: 800;">...</span><br>
                     <span id="my-identity" style="font-weight: 700; color: var(--text-primary);"></span>
                 </div>
             </div>
@@ -333,6 +351,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
+        // --- DRAG AND DROP PHYSICAL MATRIX ---
         const dragItem = document.getElementById("floating-controls");
         let active = false;
         let currentX = 0, currentY = 0, initialX = 0, initialY = 0;
@@ -385,6 +404,8 @@
         document.addEventListener("mousemove", drag);
         document.addEventListener("mouseup", dragEnd);
 
+
+        // --- FIREBASE CONFIGURATION (Compatible) ---
         const firebaseConfig = {
           apiKey: "AIzaSyCIZmW1u9fFJAXehfPm2_P5s55zzkoFiNQ",
           authDomain: "sequencelive-b2863.firebaseapp.com",
@@ -397,13 +418,23 @@
 
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
-        const gameRef = db.ref('sequence-room');
-        const chatRef = db.ref('sequence-room-chat');
+        
+        // Dynamic Room References
+        let currentRoomId = null;
+        let gameRef = null;
+        let chatRef = null;
 
         let gameState = null;
         let myPlayerId = null;
         let selectedCardIndex = null;
         let chatOpen = false;
+
+        const SUIT_UNICODE_MAP = {
+            '♠': { main: '♠', small: '♠', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
+            '♥': { main: '♥', small: '♥', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
+            '♦': { main: '♦', small: '♦', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
+            '♣': { main: '♣', small: '♣', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} }
+        }
 
         const STATIC_BOARD = [
             'FREE', 'A♣', 'K♣', 'Q♣', '10♣', '9♣', '8♣', '7♣', '6♣', 'FREE',
@@ -418,23 +449,54 @@
             'FREE', '5♦', '4♦', '3♦', '2♦', 'A♠', 'K♠', 'Q♠', '10♠', 'FREE'
         ];
 
-        gameRef.on('value', (snapshot) => {
+        // Immediate overlay hide (no game state yet)
+        document.getElementById('overlay').style.display = 'none';
+
+        // --- LOBBY LOGIC ---
+
+        function selectRoom() {
+            const inputName = document.getElementById('room-id-input').value.trim();
+            if(!inputName) { alert("Please enter a Room ID."); return; }
+            
+            // Clean room ID (alphanumeric and hyphens only)
+            currentRoomId = inputName.replace(/[^a-zA-Z0-9-]/g, '');
+            if(!currentRoomId) { alert("Invalid Room ID."); return; }
+
+            document.getElementById('overlay').style.display = 'flex';
+            document.getElementById('overlay').innerHTML = `<h2 style="color: var(--primary);">Connecting to Room: ${currentRoomId}...</h2>`;
+
+            setupFirebaseRoom(currentRoomId);
+        }
+
+        function setupFirebaseRoom(roomId) {
+            gameRef = db.ref('rooms/' + roomId + '/game');
+            chatRef = db.ref('rooms/' + roomId + '/chat');
+
+            // Set up listener for this specific room
+            gameRef.on('value', handleGameStateUpdate);
+            
+            // Re-setup chat listener
+            chatRef.off(); // clear old listeners
+            chatRef.on('child_added', (snapshot) => {
+                const msg = snapshot.val();
+                displayChatMessage(msg);
+            });
+        }
+
+        function handleGameStateUpdate(snapshot) {
             const data = snapshot.val();
             gameState = data;
             
             const overlay = document.getElementById('overlay');
+            // Safely clear loading overlays generated by hostGame
             if(overlay.style.display !== 'none' && !overlay.innerHTML.includes('Joining')) { 
                 overlay.style.display = 'none'; 
             }
 
             if (!data || data.status === 'LOBBY') {
-                showLobby(data);
+                showLobbySelector(false); // Game doesn't exist, show selectors to host
             } else if (data.status === 'PLAYING') {
-                if (myPlayerId !== null) {
-                    renderGame();
-                } else {
-                    showLobby(data);
-                }
+                showGameView();
             } else if (data.status === 'WON') {
                 if (myPlayerId !== null) renderGame(); 
                 setTimeout(() => {
@@ -442,27 +504,46 @@
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
             }
-        });
+        }
 
-        chatRef.on('child_added', (snapshot) => {
-            const msg = snapshot.val();
-            displayChatMessage(msg);
-        });
-
-        function showLobby(data) {
+        function showLobbySelector(hasActiveGame) {
+            document.getElementById('overlay').style.display = 'none';
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
+            document.getElementById('floating-controls').style.display = 'none'; // No chat in room selector
+            
             myPlayerId = null; 
 
-            if (data && (data.status === 'PLAYING' || data.status === 'LOBBY_WAITING')) {
+            if (hasActiveGame && gameState && (gameState.status === 'PLAYING' || gameState.status === 'LOBBY_WAITING')) {
+                // Game exists in this room, show seat selection
                 document.getElementById('join-section').style.display = 'block';
+                document.getElementById('lobby-room-name-display').innerText = currentRoomId;
+                
                 const seatSelect = document.getElementById('seat-selector');
                 seatSelect.innerHTML = '';
                 
-                data.players.forEach(p => { seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
+                gameState.players.forEach(p => { seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
                 updateLobbyTeamColor(); 
             } else {
+                // Game doesn't exist, prompt for hosting in this room
                 document.getElementById('join-section').style.display = 'none';
+                
+                // If room doesn't exist yet, automatically host with parameters set in Lobby
+                if(!gameState) {
+                    hostGame(currentRoomId);
+                }
+            }
+        }
+
+        function showGameView() {
+            if (myPlayerId !== null) {
+                document.getElementById('lobby').style.display = 'none';
+                document.getElementById('game').style.display = 'flex';
+                document.getElementById('floating-controls').style.display = 'flex'; // Chat available in game
+                document.getElementById('game-room-name-display').innerText = currentRoomId;
+                renderGame();
+            } else {
+                showLobbySelector(true); // Room exists, but I'm not in it yet
             }
         }
 
@@ -478,7 +559,7 @@
             }
         }
 
-        function hostGame() {
+        function hostGame(roomName) {
             const count = parseInt(document.getElementById('player-count').value);
             const numTeams = (count === 3 || count === 6) ? 3 : 2;
             const teams = ['team-red', 'team-blue', 'team-green'];
@@ -515,9 +596,12 @@
                 return { type: 'CARD', card: { value, suit } };
             });
 
+            // Initialize this specific dynamic room
             chatRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}
+                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
+            }).then(() => {
+                setupFirebaseRoom(roomName); // reconnect listeners properly
             });
         }
 
@@ -527,24 +611,39 @@
             const myName = inputName || `Player ${myPlayerId + 1}`;
             
             document.getElementById('overlay').style.display = 'flex';
-            document.getElementById('overlay').innerHTML = `<h2 style="color: var(--primary);">Joining...</h2>`;
+            document.getElementById('overlay').innerHTML = `<h2 style="color: var(--primary);">Joining Room: ${currentRoomId}...</h2>`;
 
+            // Commit seat choice to specific dynamic room
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
-                document.getElementById('lobby').style.display = 'none';
-                document.getElementById('game').style.display = 'flex';
-                renderGame();
+                showGameView();
             }).catch(error => {
                 alert("Connection failed. Please try again.");
                 document.getElementById('overlay').style.display = 'none';
+                selectRoom(); // go back to room selector
             });
         }
 
         function endGame() { 
-            gameRef.set(null); 
-            chatRef.set(null); 
+            // Setting the dynamic reference to null disconnects all players from this specific room
+            if(gameRef) gameRef.set(null); 
+            if(chatRef) chatRef.set(null); 
+            
+            // Break Firebase listeners for old room
+            if(gameRef) gameRef.off();
+            if(chatRef) chatRef.off();
+            
+            gameRef = null;
+            chatRef = null;
+            currentRoomId = null;
+            gameState = null;
+            myPlayerId = null;
+
+            document.getElementById('game-header').style.borderTopColor = 'transparent';
+            location.reload(); // Hard reload to clear all local vars safely
         }
 
+        // --- CHAT SYSTEM (Compatible) ---
         function toggleChat() {
             chatOpen = !chatOpen;
             const panel = document.getElementById('chat-panel');
@@ -560,7 +659,7 @@
         function sendChat() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
-            if (!text || myPlayerId === null) return;
+            if (!text || myPlayerId === null || !chatRef) return;
             chatRef.push({ senderId: myPlayerId, senderName: gameState.players[myPlayerId].name, text: text });
             input.value = '';
         }
@@ -581,6 +680,7 @@
             container.scrollTop = container.scrollHeight;
         }
 
+        // --- SEQUENCE ENGINE (INTACT RULESET) ---
         function detectSequences(board, teamClass) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             const getChip = (x, y) => {
@@ -628,13 +728,14 @@
             return false;
         }
 
+        // --- RENDERING & GAME LOGIC (VIsual overhaul integrated) ---
         function renderGame() {
             if (!gameState) return;
             const currentPlayer = gameState.players[gameState.turnIndex];
             const myPlayer = gameState.players[myPlayerId];
             const isMyTurn = gameState.turnIndex === myPlayerId;
 
-            document.getElementById('game-header').style.borderBottomColor = `var(--${currentPlayer.teamClass})`;
+            document.getElementById('game-header').style.borderTopColor = `var(--${currentPlayer.teamClass})`;
             document.getElementById('turn-indicator').innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
             document.getElementById('my-identity').innerText = myPlayer.name;
             document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
@@ -673,20 +774,33 @@
 
             setTimeout(drawSequenceLines, 50);
 
+            // Rich "Full Card View" Hand Render (integrated)
             const handDiv = document.getElementById('hand');
             handDiv.innerHTML = '';
             if(myPlayer.hand) {
                 myPlayer.hand.forEach((card, index) => {
                     const isRed = card.suit === '♥' || card.suit === '♦';
+                    const suitInfo = SUIT_UNICODE_MAP[card.suit];
                     const div = document.createElement('div');
                     div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
+                    const richColor = isRed ? 'red' : 'black';
+                    
                     if(card.value === 'J') {
-                        div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">J</span>
-                                         <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>
+                        const richValueIcon = suitInfo.rich_p[card.value];
+                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                         <span class="card-val-rich ${richColor}">${richValueIcon}</span>
+                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>
                                          <div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
+                    } else if (['Q', 'K', 'A'].includes(card.value)) {
+                        const richValueIcon = suitInfo.rich_p[card.value];
+                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                         <span class="card-val-rich ${richColor}">${richValueIcon}</span>
+                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
                     } else {
-                        div.innerHTML = `<span class="card-val ${isRed ? 'red' : 'black'}">${card.value}</span>
-                                         <span class="card-suit ${isRed ? 'red' : 'black'}">${card.suit}</span>`;
+                        // Numeric cards look clean
+                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                         <span class="card-val-rich ${richColor}">${card.value}</span>
+                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
                     }
                     div.onclick = () => { if(isMyTurn) { selectedCardIndex = index; renderGame(); } };
                     handDiv.appendChild(div);
@@ -717,7 +831,7 @@
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#eab308'); 
+                line.setAttribute('stroke', '#eab308'); // gold line
                 line.setAttribute('stroke-width', '5');
                 line.setAttribute('stroke-linecap', 'round');
                 
@@ -727,8 +841,9 @@
         window.addEventListener('resize', drawSequenceLines);
 
         function handleBoardClick(boardIndex) {
-            if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null) return; 
+            if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
 
+            // Copy game state locally for logic manipulation
             const newState = JSON.parse(JSON.stringify(gameState)); 
             const myPlayer = newState.players[myPlayerId];
             const playedCard = myPlayer.hand[selectedCardIndex];
@@ -738,23 +853,26 @@
             const targetY = Math.floor(boardIndex / 10);
 
             let validMove = false;
-            if (targetSquare.type === 'FREE') return; 
+            if (targetSquare.type === 'FREE') return; // Cannot place on already FREE space
 
             if (playedCard.isOneEyed) {
+                // One-Eyed Jack: Remove opponent's chip
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
                     if (isChipLocked(newState, targetX, targetY)) {
                         alert("Cannot remove a marker chip that is part of a completed SEQUENCE!");
-                        return; 
+                        return; // Forbidden by standard ruleset
                     }
-                    newState.board[boardIndex].owner = null; 
+                    newState.board[boardIndex].owner = null; // Removed
                     validMove = true;
                 }
             } else if (playedCard.isTwoEyed) {
+                // Two-Eyed Jack: Place chip on open space
                 if (!targetSquare.owner) {
                     newState.board[boardIndex].owner = myPlayer.teamClass;
                     validMove = true;
                 }
             } else {
+                // Normal card: Place on matching space
                 const isMatch = playedCard.value === targetSquare.card.value && playedCard.suit === targetSquare.card.suit;
                 if (isMatch && !targetSquare.owner) {
                     newState.board[boardIndex].owner = myPlayer.teamClass;
@@ -763,24 +881,31 @@
             }
 
             if (validMove) {
+                // Update my player's hand in local copy
                 myPlayer.hand.splice(selectedCardIndex, 1);
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
 
+                // Scan entire board for new sequences in local copy
                 newState.scoredSequences = {};
                 ['team-red', 'team-blue', 'team-green'].forEach(t => {
                     const seqs = detectSequences(newState.board, t);
                     if (seqs.length > 0) newState.scoredSequences[t] = seqs;
                 });
 
+                // Get local copy's sequence count for my team
                 const myTeamSeqs = newState.scoredSequences[myPlayer.teamClass] || [];
 
+                // Check standard standard win condition thresholds
                 if (myTeamSeqs.length >= newState.requiredSequences) {
                     newState.status = 'WON';
                     newState.winner = myPlayer.teamClass.replace('team-', '');
                 } else {
+                    // Game continues, update turn index in local copy
                     newState.turnIndex = (newState.turnIndex + 1) % newState.players.length;
                 }
+                
+                // Commit local copy's changes back to the dynamic room Ref
                 gameRef.set(newState);
             }
         }
