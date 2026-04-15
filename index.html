@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sequence Live</title>
     <style>
-        /* --- PREMIUM SLATE & GOLD "EASY" UI (Differentiating Version) --- */
+        /* --- PREMIUM SLATE & GOLD "EASY" UI --- */
         :root {
             --bg: #F0F4F7; 
             --surface: #FFFFFF; 
@@ -110,14 +110,14 @@
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         
-        button { 
+        button.action-btn { 
             width: 100%; padding: 1rem; background: var(--primary); color: #FFFFFF; 
             border: none; border-radius: 999px; 
             font-size: 1rem; font-weight: 700; 
             cursor: pointer; margin-top: 0.5rem; 
             transition: background 0.2s, transform 0.1s;
         }
-        button:active { transform: scale(0.98); background: var(--primary-hover); }
+        button.action-btn:active { transform: scale(0.98); background: var(--primary-hover); }
         
         select, input { 
             width: 100%; padding: 1rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); 
@@ -156,6 +156,12 @@
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
+        .exit-btn {
+            background: transparent; color: var(--text-secondary); font-size: 1.5rem; 
+            border: none; margin-left: 15px; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1;
+        }
+        .exit-btn:active { color: var(--team-red); transform: scale(0.9); }
+
         /* Board Scaling Matrix */
         .board-container {
             flex-grow: 1; 
@@ -189,14 +195,13 @@
         .card-suit { font-size: clamp(0.7rem, 2.5vw, 1.3rem); line-height: 1; margin-top: -1px; }
         .red { color: var(--card-text-red); } .black { color: var(--card-text-black); }
         
-        /* Matte Chip Design */
         .chip { 
             position: absolute; inset: 2px; border-radius: 50%; opacity: 0.95; 
             border: 1px solid rgba(255,255,255,0.2); z-index: 5;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
-        /* Player Hand Redesign: "Full Card View" Simulation */
+        /* Player Hand Redesign */
         .hand-container {
             flex-shrink: 0; 
             background: var(--surface); padding: 0.5rem 0.75rem; border-radius: 16px; 
@@ -251,7 +256,7 @@
         .msg-name { font-size: 0.65rem; opacity: 0.8; margin-bottom: 2px; display: block; font-weight: 700; }
         .chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--border); gap: 8px; background: var(--surface); }
         .chat-input-area input { margin-bottom: 0; border-radius: 999px; padding: 0.8rem 1rem; border: none; background: var(--bg); }
-        .chat-input-area button { margin-top: 0; width: auto; border-radius: 999px; padding: 0.8rem 1.4rem; }
+        .chat-input-area button.action-btn { margin-top: 0; width: auto; border-radius: 999px; padding: 0.8rem 1.4rem; }
     </style>
 </head>
 <body>
@@ -265,19 +270,19 @@
         <div id="floating-controls" class="top-controls">
             <button class="icon-btn" id="theme-toggle-btn">🌙</button>
             <div style="position: relative;">
-                <button class="icon-btn" id="chat-toggle-btn">💬<span id="chat-badge" class="badge">!</span></button>
+                <button class="icon-btn" id="chat-toggle-btn" style="display: none;">💬<span id="chat-badge" class="badge">!</span></button>
             </div>
         </div>
 
         <div id="chat-panel" class="chat-panel">
             <div class="chat-header-bar">
-                <span>Team Chat</span>
+                <span>Room Chat</span>
                 <span class="close-chat" onclick="toggleChat()">✖</span>
             </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
-                <button onclick="sendChat()">Send</button>
+                <button class="action-btn" onclick="sendChat()">Send</button>
             </div>
         </div>
 
@@ -298,7 +303,7 @@
                     <option value="4">4 Players (2 Teams of 2)</option>
                     <option value="6">6 Players (3 Teams of 2)</option>
                 </select>
-                <button onclick="selectRoom()">Find Game</button>
+                <button class="action-btn" onclick="selectRoom()">Find Game</button>
             </div>
             
             <div class="panel" id="join-section" style="display: none;">
@@ -313,8 +318,8 @@
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">2. Enter your name:</label>
                 <input type="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
                 
-                <button onclick="joinGame()">Join Game</button>
-                <button style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 0.5rem;" onclick="endGame()">Reset Server</button>
+                <button class="action-btn" onclick="joinGame()">Join Game</button>
+                <button class="action-btn" style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 0.5rem; border: 1px solid var(--team-red);" onclick="resetServer()">Reset Server</button>
             </div>
         </div>
 
@@ -324,13 +329,15 @@
                     <h2 id="turn-indicator" style="margin: 0; font-size: 1.1rem;">Waiting...</h2>
                     <div id="action-hint" class="action-text"></div>
                 </div>
-                
-                <div style="flex: 1; text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
-                    <span style="margin-right: 8px;">Room: <span id="game-room-name-display" style="color: var(--text-primary); font-weight: 800;">...</span></span>
-                    <span>Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 800;">0</span></span><br>
-                    <span id="my-identity" style="font-weight: 700; color: var(--text-primary);"></span>
+                <div style="flex: 1; display: flex; align-items: center; justify-content: flex-end;">
+                    <div style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+                        <span style="margin-right: 8px;">Room: <span id="game-room-name-display" style="color: var(--text-primary); font-weight: 800;">...</span></span>
+                        <span>Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 800;">0</span></span><br>
+                        <span id="my-identity" style="font-weight: 700; color: var(--text-primary);"></span>
+                    </div>
+                    <button class="exit-btn" onclick="confirmLeaveRoom()">✖</button>
                 </div>
-                </div>
+            </div>
             
             <div class="board-container">
                 <div id="board" class="board">
@@ -348,7 +355,7 @@
     <script src="https://www.gstatic.com/firebasejs/10.8.1/firebase-database-compat.js"></script>
 
     <script>
-        // --- DRAG AND DROP PHYSICAL MATRIX ---
+        // --- DRAG AND DROP CONTROLS ---
         const dragItem = document.getElementById("floating-controls");
         let active = false;
         let currentX = 0, currentY = 0, initialX = 0, initialY = 0;
@@ -384,7 +391,7 @@
                 currentX = touch.clientX - initialX;
                 currentY = touch.clientY - initialY;
                 
-                if(Math.abs(currentX - xOffset) > 5 || Math.abs(currentY - yOffset) > 5) {
+                if(Math.abs(currentX - xOffset) > 4 || Math.abs(currentY - yOffset) > 4) {
                     isDraggingMove = true;
                 }
 
@@ -427,13 +434,6 @@
         let selectedCardIndex = null;
         let chatOpen = false;
 
-        const SUIT_UNICODE_MAP = {
-            '♠': { main: '♠', small: '♠', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
-            '♥': { main: '♥', small: '♥', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
-            '♦': { main: '♦', small: '♦', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} },
-            '♣': { main: '♣', small: '♣', rich_p: { 'J': '♔', 'Q': '♕', 'K': '♖', 'A': '♔'} }
-        }
-
         const STATIC_BOARD = [
             'FREE', 'A♣', 'K♣', 'Q♣', '10♣', '9♣', '8♣', '7♣', '6♣', 'FREE',
             'A♦', '7♠', '8♠', '9♠', '10♠', 'Q♠', 'K♠', 'A♠', '5♣', '2♠',
@@ -467,10 +467,7 @@
             gameRef = db.ref('rooms/' + roomId + '/game');
             chatRef = db.ref('rooms/' + roomId + '/chat');
 
-            gameRef.on('value', handleGameStateUpdate, (error) => {
-                alert(`Firebase Blocked Access: ${error.message}\n\nPlease check your Firebase Rules and set them to TRUE.`);
-                document.getElementById('overlay').style.display = 'none';
-            });
+            gameRef.on('value', handleGameStateUpdate);
             
             chatRef.off(); 
             chatRef.on('child_added', (snapshot) => {
@@ -484,7 +481,7 @@
             gameState = data;
             
             const overlay = document.getElementById('overlay');
-            if(overlay.style.display !== 'none' && !overlay.innerText.includes('Joining')) { 
+            if(overlay.style.display !== 'none' && !overlay.innerHTML.includes('Joining')) { 
                 overlay.style.display = 'none'; 
             }
 
@@ -495,7 +492,7 @@
             } else if (data.status === 'WON') {
                 if (myPlayerId !== null) renderGame(); 
                 setTimeout(() => {
-                    overlay.innerHTML = `<h2 style="font-size: 2.2rem; color: var(--primary); margin-bottom: 1rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button style="max-width:200px; margin-top:1rem;" onclick="endGame()">Back to Lobby</button>`;
+                    overlay.innerHTML = `<h2 style="font-size: 2.2rem; color: var(--primary); margin-bottom: 1rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px; margin-top:1rem;" onclick="resetServer()">Reset Server</button><button class="action-btn" style="background:transparent; color:var(--text-secondary); max-width:200px; margin-top:0.5rem;" onclick="confirmLeaveRoom()">Leave Room</button>`;
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
             }
@@ -505,7 +502,7 @@
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
-            document.getElementById('floating-controls').style.display = 'none'; 
+            document.getElementById('chat-toggle-btn').style.display = 'none'; 
             
             myPlayerId = null; 
 
@@ -530,7 +527,7 @@
             if (myPlayerId !== null) {
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
-                document.getElementById('floating-controls').style.display = 'flex'; 
+                document.getElementById('chat-toggle-btn').style.display = 'flex'; // Chat active ONLY in room
                 document.getElementById('game-room-name-display').innerText = currentRoomId;
                 renderGame();
             } else {
@@ -592,9 +589,6 @@
                 status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
             }).then(() => {
                 setupFirebaseRoom(roomName); 
-            }).catch(error => {
-                alert(`Host failed: ${error.message}\n\nPlease check your Firebase Database Rules.`);
-                document.getElementById('overlay').style.display = 'none';
             });
         }
 
@@ -614,35 +608,53 @@
 
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
-                try {
-                    showGameView();
-                } catch(e) {
-                    console.error(e);
-                    alert("UI Rendering error: " + e.message);
-                }
+                showGameView();
             }).catch(error => {
                 myPlayerId = null; 
                 document.getElementById('overlay').style.display = 'none';
-                
-                if (error instanceof TypeError || error instanceof ReferenceError) {
-                    alert(`App Logic Error: ${error.message}`);
-                } else {
-                    alert(`Connection failed: ${error.message}\n\nPlease check your internet connection and try again.`);
-                }
+                alert(`Connection failed: ${error.message}`);
                 showLobbySelector(true);
             });
         }
 
-        function endGame() { 
-            if(gameRef) gameRef.set(null).catch(e => console.log(e)); 
-            if(chatRef) chatRef.set(null).catch(e => console.log(e)); 
-            
-            if(gameRef) gameRef.off();
-            if(chatRef) chatRef.off();
-            
-            gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
-            document.getElementById('game-header').style.borderTopColor = 'transparent';
-            location.reload(); 
+        // Graceful Client Disconnect
+        function confirmLeaveRoom() {
+            if(confirm("Are you sure you want to leave the room?")) {
+                if(gameRef) gameRef.off();
+                if(chatRef) chatRef.off();
+                
+                gameRef = null;
+                chatRef = null;
+                currentRoomId = null;
+                gameState = null;
+                myPlayerId = null;
+                
+                document.getElementById('game-header').style.borderTopColor = 'transparent';
+                
+                chatOpen = false;
+                document.getElementById('chat-panel').style.display = 'none';
+                document.getElementById('chat-toggle-btn').style.display = 'none'; // Hide chat
+                
+                document.getElementById('game').style.display = 'none';
+                document.getElementById('overlay').style.display = 'none';
+                document.getElementById('lobby').style.display = 'flex';
+                document.getElementById('join-section').style.display = 'none';
+            }
+        }
+
+        // Hard Server Wipe
+        function resetServer() { 
+            if(confirm("This will permanently delete the room for everyone. Continue?")) {
+                if(gameRef) gameRef.set(null).catch(e => console.log(e)); 
+                if(chatRef) chatRef.set(null).catch(e => console.log(e)); 
+                
+                if(gameRef) gameRef.off();
+                if(chatRef) chatRef.off();
+                
+                gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
+                document.getElementById('game-header').style.borderTopColor = 'transparent';
+                location.reload(); 
+            }
         }
 
         // --- CHAT SYSTEM ---
@@ -783,27 +795,19 @@
             if(myPlayer.hand) {
                 myPlayer.hand.forEach((card, index) => {
                     const isRed = card.suit === '♥' || card.suit === '♦';
-                    const suitInfo = SUIT_UNICODE_MAP[card.suit];
                     const div = document.createElement('div');
                     div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
                     const richColor = isRed ? 'red' : 'black';
                     
+                    // FIXED BUG: Standard letters used to ensure visual clarity.
+                    div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                     <span class="card-val-rich ${richColor}">${card.value}</span>
+                                     <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
+                    
                     if(card.value === 'J') {
-                        const richValueIcon = suitInfo.rich_p[card.value];
-                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                         <span class="card-val-rich ${richColor}">${richValueIcon}</span>
-                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>
-                                         <div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
-                    } else if (['Q', 'K', 'A'].includes(card.value)) {
-                        const richValueIcon = suitInfo.rich_p[card.value];
-                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                         <span class="card-val-rich ${richColor}">${richValueIcon}</span>
-                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
-                    } else {
-                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                         <span class="card-val-rich ${richColor}">${card.value}</span>
-                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
+                        div.innerHTML += `<div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
                     }
+                    
                     div.onclick = () => { if(isMyTurn) { selectedCardIndex = index; renderGame(); } };
                     handDiv.appendChild(div);
                 });
