@@ -320,16 +320,17 @@
 
         <div id="game">
             <div id="game-header" class="header">
-                <div class="header-content" style="text-align: left;">
+                <div style="flex: 1; text-align: left;">
                     <h2 id="turn-indicator" style="margin: 0; font-size: 1.1rem;">Waiting...</h2>
                     <div id="action-hint" class="action-text"></div>
                 </div>
-                <div class="header-content" style="text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
+                
+                <div style="flex: 1; text-align: right; font-size: 0.85rem; color: var(--text-secondary);">
                     <span style="margin-right: 8px;">Room: <span id="game-room-name-display" style="color: var(--text-primary); font-weight: 800;">...</span></span>
                     <span>Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 800;">0</span></span><br>
                     <span id="my-identity" style="font-weight: 700; color: var(--text-primary);"></span>
                 </div>
-            </div>
+                </div>
             
             <div class="board-container">
                 <div id="board" class="board">
@@ -377,11 +378,13 @@
 
         function drag(e) {
             if (active) {
+                if(e.cancelable) e.preventDefault(); 
+                
                 const touch = e.type.includes("touch") ? e.touches[0] : e;
                 currentX = touch.clientX - initialX;
                 currentY = touch.clientY - initialY;
                 
-                if(Math.abs(currentX - xOffset) > 4 || Math.abs(currentY - yOffset) > 4) {
+                if(Math.abs(currentX - xOffset) > 5 || Math.abs(currentY - yOffset) > 5) {
                     isDraggingMove = true;
                 }
 
@@ -394,7 +397,7 @@
         function dragEnd(e) { active = false; }
 
         document.addEventListener("touchstart", dragStart, { passive: true });
-        document.addEventListener("touchmove", drag, { passive: true });
+        document.addEventListener("touchmove", drag, { passive: false });
         document.addEventListener("touchend", dragEnd);
         document.addEventListener("mousedown", dragStart);
         document.addEventListener("mousemove", drag);
@@ -464,7 +467,10 @@
             gameRef = db.ref('rooms/' + roomId + '/game');
             chatRef = db.ref('rooms/' + roomId + '/chat');
 
-            gameRef.on('value', handleGameStateUpdate);
+            gameRef.on('value', handleGameStateUpdate, (error) => {
+                alert(`Firebase Blocked Access: ${error.message}\n\nPlease check your Firebase Rules and set them to TRUE.`);
+                document.getElementById('overlay').style.display = 'none';
+            });
             
             chatRef.off(); 
             chatRef.on('child_added', (snapshot) => {
@@ -478,7 +484,7 @@
             gameState = data;
             
             const overlay = document.getElementById('overlay');
-            if(overlay.style.display !== 'none' && !overlay.innerHTML.includes('Joining')) { 
+            if(overlay.style.display !== 'none' && !overlay.innerText.includes('Joining')) { 
                 overlay.style.display = 'none'; 
             }
 
@@ -586,6 +592,9 @@
                 status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
             }).then(() => {
                 setupFirebaseRoom(roomName); 
+            }).catch(error => {
+                alert(`Host failed: ${error.message}\n\nPlease check your Firebase Database Rules.`);
+                document.getElementById('overlay').style.display = 'none';
             });
         }
 
@@ -605,11 +614,21 @@
 
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
-                showGameView();
+                try {
+                    showGameView();
+                } catch(e) {
+                    console.error(e);
+                    alert("UI Rendering error: " + e.message);
+                }
             }).catch(error => {
                 myPlayerId = null; 
                 document.getElementById('overlay').style.display = 'none';
-                alert(`Connection failed: ${error.message}\n\nPlease check your internet connection and try again.`);
+                
+                if (error instanceof TypeError || error instanceof ReferenceError) {
+                    alert(`App Logic Error: ${error.message}`);
+                } else {
+                    alert(`Connection failed: ${error.message}\n\nPlease check your internet connection and try again.`);
+                }
                 showLobbySelector(true);
             });
         }
