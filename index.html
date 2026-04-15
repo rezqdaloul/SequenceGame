@@ -5,16 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sequence Live</title>
     <style>
-        /* --- PREMIUM SLATE & GOLD "EASY" UI (Differentiating Version) --- */
+        /* --- PREMIUM SLATE & GOLD "EASY" UI --- */
         :root {
-            /* Palette: Stark readable palette with Muted Gold accents */
-            --bg: #F0F4F7; /* Off-slate background */
-            --surface: #FFFFFF; /* White floating cards */
+            --bg: #F0F4F7; 
+            --surface: #FFFFFF; 
             --border: #D1D5DB; 
             --text-primary: #1F2937; 
             --text-secondary: #6B7280; 
             
-            --primary: #C7A17A; /* Muted proprietary Gold */
+            --primary: #C7A17A; 
             --primary-hover: #A08160;
             --primary-light: #F9F1E6; 
             
@@ -22,19 +21,18 @@
             --card-bg: #FFFFFF;
             --card-text-black: #111827;
             --card-text-red: #B91C1C;
-            --free-bg: #C7A17A; /* Gold free spaces */
+            --free-bg: #C7A17A; 
             --free-text: #FFFFFF;
             
             --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05); 
             
-            /* Clean Matte Team Colors */
-            --team-red: #B91C1C; /* Crimson */
-            --team-blue: #1E40AF; /* Royal */
-            --team-green: #065F46; /* Forest */
+            --team-red: #B91C1C; 
+            --team-blue: #1E40AF; 
+            --team-green: #065F46; 
         }
 
         .dark-mode {
-            --bg: #111827; /* Near black slate */
+            --bg: #111827; 
             --surface: #1F2937; 
             --border: #374151;
             --text-primary: #F9FAFB;
@@ -191,14 +189,13 @@
         .card-suit { font-size: clamp(0.7rem, 2.5vw, 1.3rem); line-height: 1; margin-top: -1px; }
         .red { color: var(--card-text-red); } .black { color: var(--card-text-black); }
         
-        /* Matte Chip Design */
         .chip { 
             position: absolute; inset: 2px; border-radius: 50%; opacity: 0.95; 
             border: 1px solid rgba(255,255,255,0.2); z-index: 5;
             box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
-        /* Player Hand Redesign: "Full Card View" Simulation */
+        /* Player Hand Redesign */
         .hand-container {
             flex-shrink: 0; 
             background: var(--surface); padding: 0.5rem 0.75rem; border-radius: 16px; 
@@ -219,11 +216,8 @@
             transition: transform 0.2s ease, border 0.2s ease, box-shadow 0.2s ease;
             padding: 4px; box-sizing: border-box;
         }
-        /* Top Left and Bottom Right Suits for Card Feel */
         .hand-card .rich-suit-tl { position: absolute; top: 4px; left: 4px; font-size: 0.6rem; font-weight: 800; line-height: 1; }
         .hand-card .rich-suit-br { position: absolute; bottom: 4px; right: 4px; font-size: 0.6rem; font-weight: 800; line-height: 1; transform: rotate(180deg); }
-        
-        /* Center Graphic */
         .hand-card .card-val-rich { font-size: clamp(1rem, 3.5vw, 1.8rem); font-weight: 900; line-height: 1; margin: auto; }
 
         .hand-card.selected { 
@@ -281,7 +275,7 @@
             </div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
-                <input text="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
+                <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
                 <button onclick="sendChat()">Send</button>
             </div>
         </div>
@@ -294,7 +288,7 @@
                 <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1.25rem;">Enter a Room ID to start or join a game.</p>
                 
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">Room ID:</label>
-                <input text="text" id="room-id-input" placeholder="e.g. MyGameRoom" style="margin-bottom: 1rem;" />
+                <input type="text" id="room-id-input" placeholder="e.g. MyGameRoom" style="margin-bottom: 1rem;" />
 
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">Player Count (if hosting):</label>
                 <select id="player-count" style="margin-bottom: 1rem;">
@@ -316,7 +310,7 @@
                 </div>
                 
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600;">2. Enter your name:</label>
-                <input text="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
+                <input type="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
                 
                 <button onclick="joinGame()">Join Game</button>
                 <button style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 0.5rem;" onclick="endGame()">Reset Server</button>
@@ -449,7 +443,7 @@
             'FREE', '5♦', '4♦', '3♦', '2♦', 'A♠', 'K♠', 'Q♠', '10♠', 'FREE'
         ];
 
-        // Immediate overlay hide (no game state yet)
+        // Immediate overlay hide 
         document.getElementById('overlay').style.display = 'none';
 
         // --- LOBBY LOGIC ---
@@ -458,7 +452,7 @@
             const inputName = document.getElementById('room-id-input').value.trim();
             if(!inputName) { alert("Please enter a Room ID."); return; }
             
-            // Clean room ID (alphanumeric and hyphens only)
+            // Clean room ID 
             currentRoomId = inputName.replace(/[^a-zA-Z0-9-]/g, '');
             if(!currentRoomId) { alert("Invalid Room ID."); return; }
 
@@ -472,11 +466,13 @@
             gameRef = db.ref('rooms/' + roomId + '/game');
             chatRef = db.ref('rooms/' + roomId + '/chat');
 
-            // Set up listener for this specific room
-            gameRef.on('value', handleGameStateUpdate);
+            // Catch database rules permission errors
+            gameRef.on('value', handleGameStateUpdate, (error) => {
+                alert(`Database Access Error: ${error.message}\n\nPlease check your Firebase Rules.`);
+                document.getElementById('overlay').style.display = 'none';
+            });
             
-            // Re-setup chat listener
-            chatRef.off(); // clear old listeners
+            chatRef.off(); 
             chatRef.on('child_added', (snapshot) => {
                 const msg = snapshot.val();
                 displayChatMessage(msg);
@@ -488,13 +484,12 @@
             gameState = data;
             
             const overlay = document.getElementById('overlay');
-            // Safely clear loading overlays generated by hostGame
             if(overlay.style.display !== 'none' && !overlay.innerHTML.includes('Joining')) { 
                 overlay.style.display = 'none'; 
             }
 
             if (!data || data.status === 'LOBBY') {
-                showLobbySelector(false); // Game doesn't exist, show selectors to host
+                showLobbySelector(false); 
             } else if (data.status === 'PLAYING') {
                 showGameView();
             } else if (data.status === 'WON') {
@@ -510,12 +505,11 @@
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
-            document.getElementById('floating-controls').style.display = 'none'; // No chat in room selector
+            document.getElementById('floating-controls').style.display = 'none'; 
             
             myPlayerId = null; 
 
             if (hasActiveGame && gameState && (gameState.status === 'PLAYING' || gameState.status === 'LOBBY_WAITING')) {
-                // Game exists in this room, show seat selection
                 document.getElementById('join-section').style.display = 'block';
                 document.getElementById('lobby-room-name-display').innerText = currentRoomId;
                 
@@ -525,10 +519,7 @@
                 gameState.players.forEach(p => { seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
                 updateLobbyTeamColor(); 
             } else {
-                // Game doesn't exist, prompt for hosting in this room
                 document.getElementById('join-section').style.display = 'none';
-                
-                // If room doesn't exist yet, automatically host with parameters set in Lobby
                 if(!gameState) {
                     hostGame(currentRoomId);
                 }
@@ -539,11 +530,11 @@
             if (myPlayerId !== null) {
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
-                document.getElementById('floating-controls').style.display = 'flex'; // Chat available in game
+                document.getElementById('floating-controls').style.display = 'flex'; 
                 document.getElementById('game-room-name-display').innerText = currentRoomId;
                 renderGame();
             } else {
-                showLobbySelector(true); // Room exists, but I'm not in it yet
+                showLobbySelector(true); 
             }
         }
 
@@ -596,40 +587,51 @@
                 return { type: 'CARD', card: { value, suit } };
             });
 
-            // Initialize this specific dynamic room
             chatRef.set(null);
             gameRef.set({
                 status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
             }).then(() => {
-                setupFirebaseRoom(roomName); // reconnect listeners properly
+                setupFirebaseRoom(roomName); 
+            }).catch(error => {
+                alert(`Host failed: ${error.message}\n\nPlease check your Firebase Database Rules.`);
+                document.getElementById('overlay').style.display = 'none';
             });
         }
 
         function joinGame() {
-            myPlayerId = parseInt(document.getElementById('seat-selector').value);
+            const seatSelect = document.getElementById('seat-selector');
+            if (!seatSelect || seatSelect.options.length === 0) {
+                alert("Room is still generating, please wait a moment and try again.");
+                return;
+            }
+
+            myPlayerId = parseInt(seatSelect.value);
+            if (isNaN(myPlayerId)) {
+                alert("Invalid seat selection.");
+                return;
+            }
+
             const inputName = document.getElementById('join-name').value.trim();
             const myName = inputName || `Player ${myPlayerId + 1}`;
             
             document.getElementById('overlay').style.display = 'flex';
             document.getElementById('overlay').innerHTML = `<h2 style="color: var(--primary);">Joining Room: ${currentRoomId}...</h2>`;
 
-            // Commit seat choice to specific dynamic room
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
                 showGameView();
             }).catch(error => {
-                alert("Connection failed. Please try again.");
+                alert(`Connection failed: ${error.message}\n\nPlease verify your Firebase Rules are set to true.`);
                 document.getElementById('overlay').style.display = 'none';
-                selectRoom(); // go back to room selector
+                // Fallback to room selection if Firebase fails to assign seat
+                selectRoom(); 
             });
         }
 
         function endGame() { 
-            // Setting the dynamic reference to null disconnects all players from this specific room
             if(gameRef) gameRef.set(null); 
             if(chatRef) chatRef.set(null); 
             
-            // Break Firebase listeners for old room
             if(gameRef) gameRef.off();
             if(chatRef) chatRef.off();
             
@@ -640,7 +642,7 @@
             myPlayerId = null;
 
             document.getElementById('game-header').style.borderTopColor = 'transparent';
-            location.reload(); // Hard reload to clear all local vars safely
+            location.reload(); 
         }
 
         // --- CHAT SYSTEM (Compatible) ---
@@ -680,7 +682,7 @@
             container.scrollTop = container.scrollHeight;
         }
 
-        // --- SEQUENCE ENGINE (INTACT RULESET) ---
+        // --- SEQUENCE ENGINE ---
         function detectSequences(board, teamClass) {
             const dirs = [[1,0], [0,1], [1,1], [1,-1]];
             const getChip = (x, y) => {
@@ -728,7 +730,6 @@
             return false;
         }
 
-        // --- RENDERING & GAME LOGIC (VIsual overhaul integrated) ---
         function renderGame() {
             if (!gameState) return;
             const currentPlayer = gameState.players[gameState.turnIndex];
@@ -774,7 +775,6 @@
 
             setTimeout(drawSequenceLines, 50);
 
-            // Rich "Full Card View" Hand Render (integrated)
             const handDiv = document.getElementById('hand');
             handDiv.innerHTML = '';
             if(myPlayer.hand) {
@@ -797,7 +797,6 @@
                                          <span class="card-val-rich ${richColor}">${richValueIcon}</span>
                                          <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
                     } else {
-                        // Numeric cards look clean
                         div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
                                          <span class="card-val-rich ${richColor}">${card.value}</span>
                                          <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
@@ -831,7 +830,7 @@
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1);
                 line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#eab308'); // gold line
+                line.setAttribute('stroke', '#eab308'); 
                 line.setAttribute('stroke-width', '5');
                 line.setAttribute('stroke-linecap', 'round');
                 
@@ -843,7 +842,6 @@
         function handleBoardClick(boardIndex) {
             if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
 
-            // Copy game state locally for logic manipulation
             const newState = JSON.parse(JSON.stringify(gameState)); 
             const myPlayer = newState.players[myPlayerId];
             const playedCard = myPlayer.hand[selectedCardIndex];
@@ -853,26 +851,23 @@
             const targetY = Math.floor(boardIndex / 10);
 
             let validMove = false;
-            if (targetSquare.type === 'FREE') return; // Cannot place on already FREE space
+            if (targetSquare.type === 'FREE') return; 
 
             if (playedCard.isOneEyed) {
-                // One-Eyed Jack: Remove opponent's chip
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
                     if (isChipLocked(newState, targetX, targetY)) {
                         alert("Cannot remove a marker chip that is part of a completed SEQUENCE!");
-                        return; // Forbidden by standard ruleset
+                        return; 
                     }
-                    newState.board[boardIndex].owner = null; // Removed
+                    newState.board[boardIndex].owner = null; 
                     validMove = true;
                 }
             } else if (playedCard.isTwoEyed) {
-                // Two-Eyed Jack: Place chip on open space
                 if (!targetSquare.owner) {
                     newState.board[boardIndex].owner = myPlayer.teamClass;
                     validMove = true;
                 }
             } else {
-                // Normal card: Place on matching space
                 const isMatch = playedCard.value === targetSquare.card.value && playedCard.suit === targetSquare.card.suit;
                 if (isMatch && !targetSquare.owner) {
                     newState.board[boardIndex].owner = myPlayer.teamClass;
@@ -881,32 +876,28 @@
             }
 
             if (validMove) {
-                // Update my player's hand in local copy
                 myPlayer.hand.splice(selectedCardIndex, 1);
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
 
-                // Scan entire board for new sequences in local copy
                 newState.scoredSequences = {};
                 ['team-red', 'team-blue', 'team-green'].forEach(t => {
                     const seqs = detectSequences(newState.board, t);
                     if (seqs.length > 0) newState.scoredSequences[t] = seqs;
                 });
 
-                // Get local copy's sequence count for my team
                 const myTeamSeqs = newState.scoredSequences[myPlayer.teamClass] || [];
 
-                // Check standard standard win condition thresholds
                 if (myTeamSeqs.length >= newState.requiredSequences) {
                     newState.status = 'WON';
                     newState.winner = myPlayer.teamClass.replace('team-', '');
                 } else {
-                    // Game continues, update turn index in local copy
                     newState.turnIndex = (newState.turnIndex + 1) % newState.players.length;
                 }
                 
-                // Commit local copy's changes back to the dynamic room Ref
-                gameRef.set(newState);
+                gameRef.set(newState).catch(error => {
+                    alert(`Play failed: ${error.message}`);
+                });
             }
         }
     </script>
