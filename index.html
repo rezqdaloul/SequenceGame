@@ -132,7 +132,7 @@
             background: var(--surface); padding: 1rem 1.25rem; border-radius: 16px; 
             box-shadow: var(--shadow-soft); border-top: 4px solid transparent; 
             margin-bottom: 0.5rem;
-            min-height: 80px; /* Increased height */
+            min-height: 80px; 
         }
         
         .header-left { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; }
@@ -142,7 +142,6 @@
         h2#turn-indicator { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
         .action-text { color: var(--primary); font-weight: 700; font-size: 0.85rem; margin-top: 4px; }
 
-        /* Static Icons */
         .icon-btn { 
             background: var(--surface); color: var(--text-primary); border: none; 
             border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; 
@@ -194,7 +193,7 @@
             flex-shrink: 0; 
             background: var(--surface); padding: 0.75rem 1rem; border-radius: 16px; 
             box-shadow: var(--shadow-soft); 
-            height: 135px; /* Increased Height */
+            height: 135px; 
             display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
         }
         
@@ -204,9 +203,9 @@
         }
         .hand-card { 
             flex: 1; min-width: 0; 
-            max-width: 75px; /* Increased Width */
+            max-width: 75px; 
             height: 100%; 
-            max-height: 105px; /* Increased Height */
+            max-height: 105px; 
             background: var(--card-bg); border-radius: 8px; 
             display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
             cursor: pointer; position: relative;
@@ -219,7 +218,7 @@
         .hand-card .card-val-rich { font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 900; line-height: 1; margin: auto; }
 
         .hand-card.selected { 
-            transform: translateY(-12px) rotate(-4deg); /* Animated Lift & Rotate */
+            transform: translateY(-12px) rotate(-4deg); 
             border-color: var(--primary); 
             box-shadow: 0 8px 16px rgba(199, 161, 122, 0.3); z-index: 10; 
         }
@@ -422,6 +421,28 @@
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
+        // --- AUTO GARBAGE COLLECTION FOR GHOST ROOMS ---
+        function cleanupOldRooms() {
+            db.ref('rooms').once('value').then(snapshot => {
+                const now = Date.now();
+                snapshot.forEach(child => {
+                    const roomData = child.val();
+                    if (roomData && roomData.game) {
+                        const lastActive = roomData.game.lastActive || 0;
+                        // If room hasn't been active in 48 hours, delete it.
+                        if (now - lastActive > 48 * 60 * 60 * 1000) { 
+                            child.ref.remove();
+                        }
+                    } else {
+                        // Empty/corrupt legacy room node -> Delete
+                        child.ref.remove();
+                    }
+                });
+            }).catch(e => console.log("Garbage collection skipped.", e));
+        }
+        // Run cleanup silently on boot
+        cleanupOldRooms();
+
         let currentRoomId = null;
         let gameRef = null;
         let chatRef = null;
@@ -430,6 +451,13 @@
         let myPlayerId = null;
         let selectedCardIndex = null;
         let chatOpen = false;
+
+        const SUIT_UNICODE_MAP = {
+            '♠': { main: '♠', small: '♠', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
+            '♥': { main: '♥', small: '♥', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
+            '♦': { main: '♦', small: '♦', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
+            '♣': { main: '♣', small: '♣', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} }
+        }
 
         const STATIC_BOARD = [
             'FREE', 'A♣', 'K♣', 'Q♣', '10♣', '9♣', '8♣', '7♣', '6♣', 'FREE',
@@ -492,7 +520,7 @@
                 setTimeout(() => {
                     document.getElementById('overlay-text').innerHTML = `🏆<br>${data.winner.toUpperCase()} TEAM WINS!`;
                     // Temporarily replace overlay content with a button
-                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="endGame()">Back to Lobby</button>`;
+                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="returnToLobby()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
             }
@@ -584,7 +612,16 @@
 
             chatRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
+                status: 'PLAYING', 
+                playerCount: count, 
+                requiredSequences: numTeams === 3 ? 1 : 2, 
+                turnIndex: 0, 
+                deck: deck, 
+                players: players, 
+                board: board, 
+                scoredSequences: {}, 
+                roomName: roomName,
+                lastActive: firebase.database.ServerValue.TIMESTAMP // Auto-GC Timestamp
             }).then(() => {
                 setupFirebaseRoom(roomName); 
             }).catch(error => {
@@ -605,9 +642,7 @@
             const myName = inputName || `Player ${myPlayerId + 1}`;
             
             document.getElementById('overlay').style.display = 'flex';
-            
-            // Safe reset of overlay content for joining
-            document.getElementById('overlay').innerHTML = `<h2 style="color: white;" id="overlay-text">Joining...</h2>`;
+            document.getElementById('overlay-text').innerText = "Joining...";
 
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
@@ -624,21 +659,14 @@
             });
         }
 
+        // Return safely without destroying the room
+        function returnToLobby() {
+            location.reload();
+        }
+
         function confirmLeaveRoom() {
             showCustomConfirm("Are you sure you want to leave the room?", () => {
-                if(gameRef) gameRef.off();
-                if(chatRef) chatRef.off();
-                
-                gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
-                document.getElementById('game-header').style.borderTopColor = 'transparent';
-                
-                chatOpen = false;
-                document.getElementById('chat-panel').style.display = 'none';
-                
-                document.getElementById('game').style.display = 'none';
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('lobby').style.display = 'flex';
-                document.getElementById('join-section').style.display = 'none';
+                returnToLobby();
             });
         }
 
@@ -646,13 +674,7 @@
             showCustomConfirm("This will permanently delete the room for everyone. Continue?", () => {
                 if(gameRef) gameRef.set(null).catch(e => console.log(e)); 
                 if(chatRef) chatRef.set(null).catch(e => console.log(e)); 
-                
-                if(gameRef) gameRef.off();
-                if(chatRef) chatRef.off();
-                
-                gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
-                document.getElementById('game-header').style.borderTopColor = 'transparent';
-                location.reload(); 
+                returnToLobby(); 
             });
         }
 
@@ -748,7 +770,7 @@
             const myPlayer = gameState.players[myPlayerId];
             const isMyTurn = gameState.turnIndex === myPlayerId;
 
-            document.getElementById('game-header').style.borderTopColor = `var(--${currentPlayer.teamClass})`;
+            document.getElementById('game-header').style.borderBottomColor = `var(--${currentPlayer.teamClass})`;
             document.getElementById('turn-indicator').innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
             document.getElementById('my-identity').innerText = myPlayer.name;
             document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
@@ -794,12 +816,14 @@
             if(myPlayer.hand) {
                 myPlayer.hand.forEach((card, index) => {
                     const isRed = card.suit === '♥' || card.suit === '♦';
+                    const suitInfo = SUIT_UNICODE_MAP[card.suit];
                     const div = document.createElement('div');
                     div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
                     const richColor = isRed ? 'red' : 'black';
                     
+                    const richValueIcon = suitInfo.rich_p[card.value];
                     div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                     <span class="card-val-rich ${richColor}">${card.value}</span>
+                                     <span class="card-val-rich ${richColor}">${richValueIcon}</span>
                                      <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
                     
                     if(card.value === 'J') {
@@ -887,6 +911,9 @@
                 myPlayer.hand.splice(selectedCardIndex, 1);
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
+                
+                // Keep the Auto-GC Timestamp fresh with every turn
+                newState.lastActive = firebase.database.ServerValue.TIMESTAMP;
 
                 newState.scoredSequences = {};
                 ['team-red', 'team-blue', 'team-green'].forEach(t => {
