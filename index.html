@@ -429,18 +429,15 @@
                     const roomData = child.val();
                     if (roomData && roomData.game) {
                         const lastActive = roomData.game.lastActive || 0;
-                        // If room hasn't been active in 48 hours, delete it.
                         if (now - lastActive > 48 * 60 * 60 * 1000) { 
                             child.ref.remove();
                         }
                     } else {
-                        // Empty/corrupt legacy room node -> Delete
                         child.ref.remove();
                     }
                 });
             }).catch(e => console.log("Garbage collection skipped.", e));
         }
-        // Run cleanup silently on boot
         cleanupOldRooms();
 
         let currentRoomId = null;
@@ -451,13 +448,6 @@
         let myPlayerId = null;
         let selectedCardIndex = null;
         let chatOpen = false;
-
-        const SUIT_UNICODE_MAP = {
-            '♠': { main: '♠', small: '♠', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
-            '♥': { main: '♥', small: '♥', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
-            '♦': { main: '♦', small: '♦', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} },
-            '♣': { main: '♣', small: '♣', rich_p: { 'J': 'J', 'Q': 'Q', 'K': 'K', 'A': 'A'} }
-        }
 
         const STATIC_BOARD = [
             'FREE', 'A♣', 'K♣', 'Q♣', '10♣', '9♣', '8♣', '7♣', '6♣', 'FREE',
@@ -471,6 +461,8 @@
             '6♦', '3♥', '4♥', '5♥', '6♥', '7♥', '8♥', '9♥', '10♥', '9♠',
             'FREE', '5♦', '4♦', '3♦', '2♦', 'A♠', 'K♠', 'Q♠', '10♠', 'FREE'
         ];
+
+        document.getElementById('overlay').style.display = 'none';
 
         // --- LOBBY LOGIC ---
         function selectRoom() {
@@ -519,7 +511,6 @@
                 if (myPlayerId !== null) renderGame(); 
                 setTimeout(() => {
                     document.getElementById('overlay-text').innerHTML = `🏆<br>${data.winner.toUpperCase()} TEAM WINS!`;
-                    // Temporarily replace overlay content with a button
                     overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="returnToLobby()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
@@ -621,7 +612,7 @@
                 board: board, 
                 scoredSequences: {}, 
                 roomName: roomName,
-                lastActive: firebase.database.ServerValue.TIMESTAMP // Auto-GC Timestamp
+                lastActive: firebase.database.ServerValue.TIMESTAMP 
             }).then(() => {
                 setupFirebaseRoom(roomName); 
             }).catch(error => {
@@ -659,7 +650,6 @@
             });
         }
 
-        // Return safely without destroying the room
         function returnToLobby() {
             location.reload();
         }
@@ -814,16 +804,15 @@
             const handDiv = document.getElementById('hand');
             handDiv.innerHTML = '';
             if(myPlayer.hand) {
+                // FIXED BUG: Removed redundant dictionary mapping entirely. Uses card.value natively.
                 myPlayer.hand.forEach((card, index) => {
                     const isRed = card.suit === '♥' || card.suit === '♦';
-                    const suitInfo = SUIT_UNICODE_MAP[card.suit];
                     const div = document.createElement('div');
                     div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
                     const richColor = isRed ? 'red' : 'black';
                     
-                    const richValueIcon = suitInfo.rich_p[card.value];
                     div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                     <span class="card-val-rich ${richColor}">${richValueIcon}</span>
+                                     <span class="card-val-rich ${richColor}">${card.value}</span>
                                      <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
                     
                     if(card.value === 'J') {
@@ -912,7 +901,6 @@
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
                 
-                // Keep the Auto-GC Timestamp fresh with every turn
                 newState.lastActive = firebase.database.ServerValue.TIMESTAMP;
 
                 newState.scoredSequences = {};
