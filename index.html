@@ -46,124 +46,103 @@
         /* --- STRICT NO-SCROLL VIEWPORT MATRIX --- */
         body {
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            background: var(--bg);
-            color: var(--text-primary);
-            margin: 0;
-            padding: 0;
-            height: 100dvh; 
-            width: 100vw;
-            overflow: hidden; 
-            display: flex;
-            justify-content: center;
-            transition: background 0.3s ease, color 0.3s ease;
+            background: var(--bg); color: var(--text-primary); margin: 0; padding: 0;
+            height: 100dvh; width: 100vw; overflow: hidden; 
+            display: flex; justify-content: center; transition: background 0.3s ease, color 0.3s ease;
         }
         
         #app-container {
-            width: 100%;
-            max-width: 800px;
-            height: 100dvh;
-            display: flex;
-            flex-direction: column;
-            padding: 0.5rem;
-            box-sizing: border-box;
-            position: relative;
+            width: 100%; max-width: 800px; height: 100dvh; display: flex; flex-direction: column;
+            padding: 0.5rem; box-sizing: border-box; position: relative;
         }
 
-        #lobby, #game {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            width: 100%;
-        }
+        #lobby, #game { display: none; flex-direction: column; height: 100%; width: 100%; }
 
         #lobby { 
-            overflow-y: auto; 
-            padding: 1rem; 
-            padding-top: 2rem;
-            display: flex; 
-            flex-direction: column; 
-            align-items: center; 
-            width: 100%;
-            box-sizing: border-box;
-            margin: auto;
+            overflow-y: auto; padding: 1rem; padding-top: 2rem; display: flex; 
+            flex-direction: column; align-items: center; width: 100%; box-sizing: border-box; margin: auto;
         }
         
-        .lobby-header-row {
-            display: flex; justify-content: space-between; align-items: center; 
-            width: 100%; max-width: 400px; margin-bottom: 2rem;
-        }
-        
-        .lobby-header-row h1 { 
-            margin: 0; color: var(--primary); font-size: 2rem; font-weight: 800; letter-spacing: -1px;
+        .lobby-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin-bottom: 1rem; }
+        .lobby-header-row h1 { margin: 0; color: var(--primary); font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+
+        .profile-badge {
+            background: var(--surface); padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow-soft);
+            font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; border: 1px solid var(--border);
         }
 
         .panel { 
-            background: var(--surface); 
-            padding: 2rem 1.5rem; 
-            border-radius: 20px; 
-            border: none;
-            box-shadow: var(--shadow-soft); 
-            margin-bottom: 1rem;
-            width: 100%; max-width: 400px; box-sizing: border-box;
+            background: var(--surface); padding: 2rem 1.5rem; border-radius: 20px; border: none;
+            box-shadow: var(--shadow-soft); margin-bottom: 1rem; width: 100%; max-width: 400px; box-sizing: border-box;
             transition: background 0.3s ease, box-shadow 0.3s ease;
         }
         
         button.action-btn { 
-            width: 100%; padding: 1rem; background: var(--primary); color: #FFFFFF; 
-            border: none; border-radius: 999px; 
-            font-size: 1rem; font-weight: 700; 
-            cursor: pointer; margin-top: 0.5rem; 
-            transition: background 0.2s, transform 0.1s;
+            width: 100%; padding: 1rem; background: var(--primary); color: #FFFFFF; border: none; border-radius: 999px; 
+            font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s, transform 0.1s;
         }
         button.action-btn:active { transform: scale(0.98); background: var(--primary-hover); }
         
         select, input { 
             width: 100%; padding: 1rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); 
             background: var(--bg); color: var(--text-primary); box-sizing: border-box; font-size: 1rem; 
-            outline: none; transition: border-color 0.2s, background 0.3s;
-            font-weight: 500;
+            outline: none; transition: border-color 0.2s, background 0.3s; font-weight: 500;
         }
         select:focus, input:focus { border-color: var(--primary); background: var(--surface); }
 
         /* --- REDESIGNED GAME HEADER --- */
         .header { 
-            flex-shrink: 0; 
-            display: flex; justify-content: space-between; align-items: center; 
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; 
             background: var(--surface); padding: 1rem 1.25rem; border-radius: 16px; 
             box-shadow: var(--shadow-soft); border-top: 4px solid transparent; 
-            margin-bottom: 0.5rem;
-            min-height: 80px; /* Increased height */
+            margin-bottom: 0.5rem; min-height: 80px; position: relative; overflow: hidden;
         }
         
-        .header-left { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; }
-        .header-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 0.75rem; }
-        .header-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; text-align: right; }
+        .header-left { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; z-index: 2; }
+        .header-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 0.5rem; z-index: 2; }
+        .header-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; text-align: right; z-index: 2; }
 
         h2#turn-indicator { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
         .action-text { color: var(--primary); font-weight: 700; font-size: 0.85rem; margin-top: 4px; }
 
+        /* Blitz Timer Bar */
+        .blitz-bar-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: var(--border); display: none; z-index: 1;}
+        .blitz-bar-fill { height: 100%; width: 100%; background: var(--team-red); transition: width 0.1s linear; }
+
         /* Static Icons */
         .icon-btn { 
-            background: var(--surface); color: var(--text-primary); border: none; 
-            border-radius: 50%; width: 44px; height: 44px; display: flex; align-items: center; 
-            justify-content: center; cursor: pointer; font-size: 1.2rem; 
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 0; transition: transform 0.1s; 
-            position: relative;
+            background: var(--surface); color: var(--text-primary); border: none; border-radius: 50%; 
+            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 0; transition: transform 0.1s; position: relative;
         }
         .icon-btn:active { transform: scale(0.9); }
         .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
-        .exit-btn {
-            background: transparent; color: var(--text-secondary); font-size: 1.5rem; 
-            border: none; margin-left: 15px; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1;
-        }
+        .exit-btn { background: transparent; color: var(--text-secondary); font-size: 1.5rem; border: none; margin-left: 10px; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1; }
         .exit-btn:active { color: var(--team-red); transform: scale(0.9); }
+
+        /* Emote Picker */
+        #emote-picker {
+            display: none; position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
+            background: var(--surface); border-radius: 999px; padding: 8px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+            gap: 10px; z-index: 200; border: 1px solid var(--border);
+        }
+        .emote-option { font-size: 1.5rem; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .emote-option:active { transform: scale(1.3); }
+
+        /* Floating Emotes Animation */
+        @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, 0px) scale(1.2); } 80% { opacity: 1; transform: translate(-50%, -40px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -60px) scale(0.8); } }
+        .floating-emote {
+            position: absolute; left: 50%; top: 30%; pointer-events: none; z-index: 400;
+            font-size: 3.5rem; animation: floatUp 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
+        }
+        .emote-sender-tag { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
 
         /* Board Scaling Matrix */
         .board-container {
-            flex-grow: 1; 
-            display: flex; justify-content: center; align-items: center;
-            min-height: 0; width: 100%; padding: 0; margin: 0.25rem 0;
+            flex-grow: 1; display: flex; justify-content: center; align-items: center;
+            min-height: 0; width: 100%; padding: 0; margin: 0.25rem 0; position: relative;
         }
 
         .board { 
@@ -185,44 +164,31 @@
         
         .chip { 
             position: absolute; inset: 2px; border-radius: 50%; opacity: 0.95; 
-            border: 1px solid rgba(255,255,255,0.2); z-index: 5;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+            border: 1px solid rgba(255,255,255,0.2); z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
-        /* EXPANDED Player Hand */
+        /* Highlight Last Move Feature */
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(199, 161, 122, 0.8); } 100% { box-shadow: 0 0 0 12px rgba(199, 161, 122, 0); } }
+        .chip.last-move { animation: pulse-ring 1.5s infinite; border: 2px solid var(--primary); z-index: 6; }
+
+        /* Player Hand */
         .hand-container {
-            flex-shrink: 0; 
-            background: var(--surface); padding: 0.75rem 1rem; border-radius: 16px; 
-            box-shadow: var(--shadow-soft); 
-            height: 135px; /* Increased Height */
-            display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
+            flex-shrink: 0; background: var(--surface); padding: 0.75rem 1rem; border-radius: 16px; 
+            box-shadow: var(--shadow-soft); height: 135px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
         }
         
-        .hand { 
-            display: flex; gap: 0.5rem; justify-content: center; align-items: center; 
-            height: 100%; width: 100%;
-        }
+        .hand { display: flex; gap: 0.5rem; justify-content: center; align-items: center; height: 100%; width: 100%; }
         .hand-card { 
-            flex: 1; min-width: 0; 
-            max-width: 75px; /* Increased Width */
-            height: 100%; 
-            max-height: 105px; /* Increased Height */
-            background: var(--card-bg); border-radius: 8px; 
-            display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
-            cursor: pointer; position: relative;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.08); border: 2px solid var(--border);
-            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border 0.2s ease, box-shadow 0.2s ease;
-            padding: 6px; box-sizing: border-box;
+            flex: 1; min-width: 0; max-width: 75px; height: 100%; max-height: 105px; 
+            background: var(--card-bg); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
+            cursor: pointer; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.08); border: 2px solid var(--border);
+            transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border 0.2s ease, box-shadow 0.2s ease; padding: 6px; box-sizing: border-box;
         }
         .hand-card .rich-suit-tl { position: absolute; top: 4px; left: 5px; font-size: 0.65rem; font-weight: 800; line-height: 1; }
         .hand-card .rich-suit-br { position: absolute; bottom: 4px; right: 5px; font-size: 0.65rem; font-weight: 800; line-height: 1; transform: rotate(180deg); }
         .hand-card .card-val-rich { font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 900; line-height: 1; margin: auto; }
 
-        .hand-card.selected { 
-            transform: translateY(-12px) rotate(-4deg); /* Animated Lift & Rotate */
-            border-color: var(--primary); 
-            box-shadow: 0 8px 16px rgba(199, 161, 122, 0.3); z-index: 10; 
-        }
+        .hand-card.selected { transform: translateY(-12px) rotate(-4deg); border-color: var(--primary); box-shadow: 0 8px 16px rgba(199, 161, 122, 0.3); z-index: 10; }
         .jack-label { position: absolute; bottom: 8px; font-size: 0.5rem; font-weight: 700; background: var(--text-primary); color: white; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px; z-index: 2;}
         
         .team-red { background-color: var(--team-red); border-color: var(--team-red); }
@@ -233,20 +199,14 @@
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
         .team-preview-badge { padding: 0 1rem; border-radius: 10px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
 
-        /* Custom Modal Overlay */
+        /* Modals & Chat */
         #custom-modal, #overlay { display: none; position: fixed; inset: 0; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
-        
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .modal-box {
-            background: var(--surface); padding: 2rem; border-radius: 20px; width: 85%; max-width: 340px;
-            box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-        }
+        .modal-box { background: var(--surface); padding: 2rem; border-radius: 20px; width: 85%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        /* Centralized Chat Panel */
         .chat-panel { 
             display: none; position: fixed; top: 6.5rem; left: 50%; transform: translateX(-50%); width: 95vw; max-width: 400px; height: 450px; max-height: 60dvh;
-            background: var(--surface); border-radius: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.25); 
-            flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 101;
+            background: var(--surface); border-radius: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 101;
         }
         .chat-header-bar { background: var(--primary-light); color: var(--primary); padding: 16px; font-weight: 700; text-align: center; display: flex; justify-content: space-between; align-items: center; }
         .close-chat { cursor: pointer; color: var(--primary); font-size: 1.2rem; }
@@ -262,9 +222,7 @@
 </head>
 <body>
 
-    <div id="overlay">
-        <h2 style="color: white;" id="overlay-text">Connecting...</h2>
-    </div>
+    <div id="overlay"><h2 style="color: white;" id="overlay-text">Connecting...</h2></div>
 
     <div id="custom-modal">
         <div class="modal-box">
@@ -277,12 +235,17 @@
     </div>
 
     <div id="app-container">
+        
+        <div id="emote-picker">
+            <span class="emote-option" onclick="sendEmote('🔥')">🔥</span>
+            <span class="emote-option" onclick="sendEmote('😅')">😅</span>
+            <span class="emote-option" onclick="sendEmote('😡')">😡</span>
+            <span class="emote-option" onclick="sendEmote('🎉')">🎉</span>
+            <span class="emote-option" onclick="sendEmote('🤔')">🤔</span>
+        </div>
 
         <div id="chat-panel" class="chat-panel">
-            <div class="chat-header-bar">
-                <span>Room Chat</span>
-                <span class="close-chat" onclick="toggleChat()">✖</span>
-            </div>
+            <div class="chat-header-bar"><span>Room Chat</span><span class="close-chat" onclick="toggleChat()">✖</span></div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
@@ -296,21 +259,27 @@
                 <button class="icon-btn" id="lobby-theme-btn" onclick="toggleTheme()">🌙</button>
             </div>
             
-            <div class="panel">
-                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Create / Join a Room</h3>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1.25rem;">Enter a Room ID to start or join a game.</p>
-                
-                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">Room ID:</label>
-                <input type="text" id="room-id-input" placeholder="e.g. GameRoom1" style="margin-bottom: 1rem;" />
+            <div class="profile-badge" id="profile-stats">🎮 Played: 0 | 🏆 Won: 0</div>
 
-                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">Player Count (if hosting):</label>
+            <div class="panel">
+                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Create / Join Room</h3>
+                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1.25rem;">Enter a Room ID to start, join, or spectate.</p>
+                
+                <input type="text" id="room-id-input" placeholder="Room ID (e.g. GameRoom1)" style="margin-bottom: 1rem;" />
+
+                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">If Hosting New Game:</label>
                 <select id="player-count" style="margin-bottom: 1rem;">
                     <option value="2">2 Players (Red vs Blue)</option>
                     <option value="3">3 Players (Red vs Blue vs Green)</option>
                     <option value="4">4 Players (2 Teams of 2)</option>
                     <option value="6">6 Players (3 Teams of 2)</option>
                 </select>
-                <button class="action-btn" onclick="selectRoom()">Find Game</button>
+                
+                <label style="font-size: 0.85rem; color: var(--text-primary); display: flex; align-items: center; margin-bottom: 1rem; font-weight: 600; cursor: pointer;">
+                    <input type="checkbox" id="blitz-checkbox" style="width: auto; margin-right: 10px;"> Enable Blitz Mode (15s Turns)
+                </label>
+
+                <button class="action-btn" onclick="selectRoom()">Find / Create Game</button>
             </div>
             
             <div class="panel" id="join-section" style="display: none;">
@@ -325,8 +294,11 @@
                 <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">2. Enter your name:</label>
                 <input type="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
                 
-                <button class="action-btn" onclick="joinGame()">Join Game</button>
-                <button class="action-btn" style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 0.5rem; border: 1px solid var(--team-red);" onclick="resetServer()">Reset Server</button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="action-btn" onclick="joinGame()">Join</button>
+                    <button class="action-btn" style="background: var(--surface); color: var(--primary); border: 2px solid var(--primary);" onclick="spectateGame()">Spectate</button>
+                </div>
+                <button class="action-btn" style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 1rem; border: 1px solid var(--team-red);" onclick="resetServer()">Reset Server</button>
             </div>
         </div>
 
@@ -338,7 +310,8 @@
                 </div>
                 
                 <div class="header-center">
-                    <button class="icon-btn" id="game-theme-btn" onclick="toggleTheme()">🌙</button>
+                    <button class="icon-btn" id="audio-toggle-btn" onclick="toggleAudio()">🔊</button>
+                    <button class="icon-btn" onclick="toggleEmotePicker()">😀</button>
                     <button class="icon-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></button>
                 </div>
 
@@ -350,15 +323,17 @@
                     </div>
                     <button class="exit-btn" onclick="confirmLeaveRoom()">✖</button>
                 </div>
+                
+                <div class="blitz-bar-bg" id="blitz-bar-bg"><div class="blitz-bar-fill" id="blitz-bar-fill"></div></div>
             </div>
             
-            <div class="board-container">
+            <div class="board-container" id="board-container">
                 <div id="board" class="board">
                     <svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>
                 </div>
             </div>
 
-            <div class="hand-container">
+            <div class="hand-container" id="hand-container">
                 <div id="hand" class="hand"></div>
             </div>
         </div>
@@ -374,10 +349,7 @@
             document.getElementById('modal-cancel-btn').style.display = 'none';
             const okBtn = document.getElementById('modal-ok-btn');
             okBtn.innerText = 'OK';
-            okBtn.onclick = () => {
-                document.getElementById('custom-modal').style.display = 'none';
-                if(callback) callback();
-            };
+            okBtn.onclick = () => { document.getElementById('custom-modal').style.display = 'none'; if(callback) callback(); };
             document.getElementById('custom-modal').style.display = 'flex';
         }
 
@@ -386,14 +358,56 @@
             document.getElementById('modal-cancel-btn').style.display = 'block';
             const okBtn = document.getElementById('modal-ok-btn');
             okBtn.innerText = 'Yes';
-            okBtn.onclick = () => {
-                document.getElementById('custom-modal').style.display = 'none';
-                if(onConfirm) onConfirm();
-            };
-            document.getElementById('modal-cancel-btn').onclick = () => {
-                document.getElementById('custom-modal').style.display = 'none';
-            };
+            okBtn.onclick = () => { document.getElementById('custom-modal').style.display = 'none'; if(onConfirm) onConfirm(); };
+            document.getElementById('modal-cancel-btn').onclick = () => { document.getElementById('custom-modal').style.display = 'none'; };
             document.getElementById('custom-modal').style.display = 'flex';
+        }
+
+        // --- LOCAL PROFILE SYSTEM ---
+        let localProfile = JSON.parse(localStorage.getItem('seq_profile') || '{"played":0, "won":0}');
+        let hasCountedGame = false;
+
+        function renderProfile() {
+            document.getElementById('profile-stats').innerText = `🎮 Played: ${localProfile.played} | 🏆 Won: ${localProfile.won}`;
+        }
+        renderProfile();
+
+        // --- IMMERSIVE AUDIO & HAPTIC ENGINE ---
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+        let audioMuted = localStorage.getItem('seq_muted') === 'true';
+        document.getElementById('audio-toggle-btn').innerText = audioMuted ? '🔇' : '🔊';
+
+        function toggleAudio() {
+            audioMuted = !audioMuted;
+            localStorage.setItem('seq_muted', audioMuted);
+            document.getElementById('audio-toggle-btn').innerText = audioMuted ? '🔇' : '🔊';
+        }
+
+        function playHapticSound(type) {
+            if (audioMuted) return;
+            if (!audioCtx) audioCtx = new AudioContext();
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            try {
+                const osc = audioCtx.createOscillator();
+                const gain = audioCtx.createGain();
+                osc.connect(gain);
+                gain.connect(audioCtx.destination);
+                
+                if(type === 'place') {
+                    osc.type = 'sine'; osc.frequency.setValueAtTime(400, audioCtx.currentTime);
+                    osc.frequency.exponentialRampToValueAtTime(150, audioCtx.currentTime + 0.1);
+                    gain.gain.setValueAtTime(0.5, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+                    if(navigator.vibrate) navigator.vibrate(15);
+                } else if(type === 'select') {
+                    osc.type = 'triangle'; osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                    gain.gain.setValueAtTime(0.1, audioCtx.currentTime); gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.05);
+                    osc.start(); osc.stop(audioCtx.currentTime + 0.05);
+                    if(navigator.vibrate) navigator.vibrate(10);
+                }
+            } catch(e) {} // Failsafe for older browsers
         }
 
         // --- THEME SYNC ---
@@ -401,10 +415,7 @@
             document.body.classList.toggle('dark-mode');
             const isDark = document.body.classList.contains('dark-mode');
             const icon = isDark ? '☀️' : '🌙';
-            
             if(document.getElementById('lobby-theme-btn')) document.getElementById('lobby-theme-btn').innerText = icon;
-            if(document.getElementById('game-theme-btn')) document.getElementById('game-theme-btn').innerText = icon;
-            
             setTimeout(drawSequenceLines, 50);
         }
 
@@ -418,18 +429,27 @@
           messagingSenderId: "1007691968609",
           appId: "1:1007691968609:web:ab106c746937cf5058ba20"
         };
-
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
         
-        let currentRoomId = null;
-        let gameRef = null;
-        let chatRef = null;
+        // Auto GC
+        db.ref('rooms').once('value').then(snapshot => {
+            const now = Date.now();
+            snapshot.forEach(child => {
+                const roomData = child.val();
+                if (roomData && roomData.game && roomData.game.lastActive) {
+                    if (now - roomData.game.lastActive > 48 * 60 * 60 * 1000) child.ref.remove();
+                } else { child.ref.remove(); }
+            });
+        }).catch(()=>{});
 
+        let currentRoomId = null;
+        let gameRef = null; let chatRef = null; let emotesRef = null;
         let gameState = null;
-        let myPlayerId = null;
+        let myPlayerId = null; // Can be 'spectator'
         let selectedCardIndex = null;
         let chatOpen = false;
+        let blitzTimerInterval = null;
 
         const STATIC_BOARD = [
             'FREE', 'A♣', 'K♣', 'Q♣', '10♣', '9♣', '8♣', '7♣', '6♣', 'FREE',
@@ -444,11 +464,12 @@
             'FREE', '5♦', '4♦', '3♦', '2♦', 'A♠', 'K♠', 'Q♠', '10♠', 'FREE'
         ];
 
+        document.getElementById('overlay').style.display = 'none';
+
         // --- LOBBY LOGIC ---
         function selectRoom() {
             const inputName = document.getElementById('room-id-input').value.trim();
             if(!inputName) { showCustomAlert("Please enter a Room ID."); return; }
-            
             currentRoomId = inputName.replace(/[^a-zA-Z0-9-]/g, '');
             if(!currentRoomId) { showCustomAlert("Invalid Room ID. Use letters and numbers."); return; }
 
@@ -461,17 +482,18 @@
         function setupFirebaseRoom(roomId) {
             gameRef = db.ref('rooms/' + roomId + '/game');
             chatRef = db.ref('rooms/' + roomId + '/chat');
+            emotesRef = db.ref('rooms/' + roomId + '/emotes');
 
             gameRef.on('value', handleGameStateUpdate, (error) => {
-                showCustomAlert(`Firebase Blocked Access: ${error.message}\nPlease check your Firebase Rules.`);
+                showCustomAlert(`Firebase Blocked Access: ${error.message}`);
                 document.getElementById('overlay').style.display = 'none';
             });
             
             chatRef.off(); 
-            chatRef.on('child_added', (snapshot) => {
-                const msg = snapshot.val();
-                displayChatMessage(msg);
-            });
+            chatRef.on('child_added', (snapshot) => { displayChatMessage(snapshot.val()); });
+
+            emotesRef.off();
+            emotesRef.on('child_added', (snapshot) => { displayEmote(snapshot.val()); });
         }
 
         function handleGameStateUpdate(snapshot) {
@@ -479,20 +501,32 @@
             gameState = data;
             
             const overlay = document.getElementById('overlay');
-            if(overlay.style.display !== 'none' && !overlay.innerText.includes('Joining')) { 
-                overlay.style.display = 'none'; 
-            }
+            if(overlay.style.display !== 'none' && !overlay.innerText.includes('Joining')) overlay.style.display = 'none'; 
 
             if (!data || data.status === 'LOBBY') {
                 showLobbySelector(false); 
             } else if (data.status === 'PLAYING') {
                 showGameView();
+                manageBlitzTimer();
             } else if (data.status === 'WON') {
                 if (myPlayerId !== null) renderGame(); 
+                clearInterval(blitzTimerInterval);
+                document.getElementById('blitz-bar-bg').style.display = 'none';
+
+                // Update Profile once per game
+                if (!hasCountedGame && myPlayerId !== null) {
+                    hasCountedGame = true;
+                    localProfile.played++;
+                    if (myPlayerId !== 'spectator' && gameState.players[myPlayerId] && gameState.players[myPlayerId].teamClass.includes(data.winner.toLowerCase())) {
+                        localProfile.won++;
+                    }
+                    localStorage.setItem('seq_profile', JSON.stringify(localProfile));
+                    renderProfile();
+                }
+
                 setTimeout(() => {
                     document.getElementById('overlay-text').innerHTML = `🏆<br>${data.winner.toUpperCase()} TEAM WINS!`;
-                    // Temporarily replace overlay content with a button
-                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="endGame()">Back to Lobby</button>`;
+                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="returnToLobby()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
             }
@@ -502,23 +536,18 @@
             document.getElementById('overlay').style.display = 'none';
             document.getElementById('lobby').style.display = 'flex';
             document.getElementById('game').style.display = 'none';
-            
-            myPlayerId = null; 
+            myPlayerId = null; hasCountedGame = false;
 
             if (hasActiveGame && gameState && (gameState.status === 'PLAYING' || gameState.status === 'LOBBY_WAITING')) {
                 document.getElementById('join-section').style.display = 'block';
                 document.getElementById('lobby-room-name-display').innerText = currentRoomId;
-                
                 const seatSelect = document.getElementById('seat-selector');
                 seatSelect.innerHTML = '';
-                
                 gameState.players.forEach(p => { seatSelect.innerHTML += `<option value="${p.id}">${p.name}</option>`; });
                 updateLobbyTeamColor(); 
             } else {
                 document.getElementById('join-section').style.display = 'none';
-                if(!gameState) {
-                    hostGame(currentRoomId);
-                }
+                if(!gameState) hostGame(currentRoomId);
             }
         }
 
@@ -527,6 +556,13 @@
                 document.getElementById('lobby').style.display = 'none';
                 document.getElementById('game').style.display = 'flex';
                 document.getElementById('game-room-name-display').innerText = currentRoomId;
+                
+                // Spectator UI adjustment
+                if (myPlayerId === 'spectator') {
+                    document.getElementById('hand-container').style.display = 'none';
+                } else {
+                    document.getElementById('hand-container').style.display = 'flex';
+                }
                 renderGame();
             } else {
                 showLobbySelector(true); 
@@ -547,6 +583,7 @@
 
         function hostGame(roomName) {
             const count = parseInt(document.getElementById('player-count').value);
+            const blitzEnabled = document.getElementById('blitz-checkbox').checked;
             const numTeams = (count === 3 || count === 6) ? 3 : 2;
             const teams = ['team-red', 'team-blue', 'team-green'];
             
@@ -560,16 +597,12 @@
                     });
                 });
             }
-
             for (let i = deck.length - 1; i > 0; i--) {
                 const j = Math.floor(Math.random() * (i + 1));
                 [deck[i], deck[j]] = [deck[j], deck[i]]; 
             }
 
-            let cardsToDeal = 7;
-            if (count === 3 || count === 4) cardsToDeal = 6;
-            if (count === 6) cardsToDeal = 5;
-
+            let cardsToDeal = (count === 3 || count === 4) ? 6 : (count === 6 ? 5 : 7);
             let players = [];
             for(let i = 0; i < count; i++) {
                 players.push({ id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal) });
@@ -577,17 +610,16 @@
 
             let board = STATIC_BOARD.map(str => {
                 if (str === 'FREE') return { type: 'FREE' };
-                const value = str.slice(0, -1);
-                const suit = str.slice(-1);
-                return { type: 'CARD', card: { value, suit } };
+                return { type: 'CARD', card: { value: str.slice(0, -1), suit: str.slice(-1) } };
             });
 
-            chatRef.set(null);
+            chatRef.set(null); emotesRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, roomName: roomName
-            }).then(() => {
-                setupFirebaseRoom(roomName); 
-            }).catch(error => {
+                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, 
+                turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, 
+                roomName: roomName, lastMoveIndex: null, lastActive: firebase.database.ServerValue.TIMESTAMP,
+                blitzMode: blitzEnabled, turnStartTime: Date.now()
+            }).then(() => setupFirebaseRoom(roomName)).catch(error => {
                 showCustomAlert(`Host failed: ${error.message}`);
                 document.getElementById('overlay').style.display = 'none';
             });
@@ -595,88 +627,80 @@
 
         function joinGame() {
             const seatSelect = document.getElementById('seat-selector');
-            if (!seatSelect || seatSelect.options.length === 0) {
-                showCustomAlert("Room is still generating. Please try again in a moment.");
-                return;
-            }
+            if (!seatSelect || seatSelect.options.length === 0) return showCustomAlert("Room generating...");
 
             myPlayerId = parseInt(seatSelect.value);
-            const inputName = document.getElementById('join-name').value.trim();
-            const myName = inputName || `Player ${myPlayerId + 1}`;
+            const myName = document.getElementById('join-name').value.trim() || `Player ${myPlayerId + 1}`;
             
             document.getElementById('overlay').style.display = 'flex';
-            
-            // Safe reset of overlay content for joining
             document.getElementById('overlay').innerHTML = `<h2 style="color: white;" id="overlay-text">Joining...</h2>`;
 
             gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
                 document.getElementById('overlay').style.display = 'none';
-                try {
-                    showGameView();
-                } catch(e) {
-                    showCustomAlert("UI Rendering error: " + e.message);
-                }
+                showGameView();
             }).catch(error => {
-                myPlayerId = null; 
-                document.getElementById('overlay').style.display = 'none';
-                showCustomAlert(`Connection failed: ${error.message}`);
-                showLobbySelector(true);
+                myPlayerId = null; document.getElementById('overlay').style.display = 'none';
+                showCustomAlert(`Connection failed: ${error.message}`); showLobbySelector(true);
             });
         }
 
-        function confirmLeaveRoom() {
-            showCustomConfirm("Are you sure you want to leave the room?", () => {
-                if(gameRef) gameRef.off();
-                if(chatRef) chatRef.off();
-                
-                gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
-                document.getElementById('game-header').style.borderTopColor = 'transparent';
-                
-                chatOpen = false;
-                document.getElementById('chat-panel').style.display = 'none';
-                
-                document.getElementById('game').style.display = 'none';
-                document.getElementById('overlay').style.display = 'none';
-                document.getElementById('lobby').style.display = 'flex';
-                document.getElementById('join-section').style.display = 'none';
-            });
+        function spectateGame() {
+            myPlayerId = 'spectator';
+            showGameView();
         }
 
+        function returnToLobby() { location.reload(); }
+        function confirmLeaveRoom() { showCustomConfirm("Are you sure you want to leave the room?", returnToLobby); }
         function resetServer() { 
-            showCustomConfirm("This will permanently delete the room for everyone. Continue?", () => {
-                if(gameRef) gameRef.set(null).catch(e => console.log(e)); 
-                if(chatRef) chatRef.set(null).catch(e => console.log(e)); 
-                
-                if(gameRef) gameRef.off();
-                if(chatRef) chatRef.off();
-                
-                gameRef = null; chatRef = null; currentRoomId = null; gameState = null; myPlayerId = null;
-                document.getElementById('game-header').style.borderTopColor = 'transparent';
-                location.reload(); 
+            showCustomConfirm("Permanently delete room for everyone?", () => {
+                if(gameRef) gameRef.set(null).catch(e => {}); 
+                if(chatRef) chatRef.set(null).catch(e => {}); 
+                returnToLobby(); 
             });
+        }
+
+        // --- EMOTE SYSTEM ---
+        function toggleEmotePicker() {
+            const p = document.getElementById('emote-picker');
+            p.style.display = p.style.display === 'flex' ? 'none' : 'flex';
+        }
+        function sendEmote(emoji) {
+            document.getElementById('emote-picker').style.display = 'none';
+            if(!emotesRef) return;
+            const sender = myPlayerId === 'spectator' ? 'Spectator' : (gameState.players[myPlayerId]?.name || 'Player');
+            emotesRef.push({ emoji, sender, timestamp: Date.now() }).then(() => {
+                // Cleanup old emotes in DB occasionally
+                emotesRef.once('value', s => { if(s.numChildren() > 10) { let keys = Object.keys(s.val()); emotesRef.child(keys[0]).remove(); }});
+            });
+        }
+        function displayEmote(data) {
+            // Guard against stale emotes on load
+            if (Date.now() - data.timestamp > 5000) return; 
+            const container = document.getElementById('board-container');
+            const el = document.createElement('div');
+            el.className = 'floating-emote';
+            el.innerHTML = `${data.emoji}<div class="emote-sender-tag">${data.sender}</div>`;
+            // Randomize horizontal float slightly
+            el.style.left = `${50 + (Math.random() * 20 - 10)}%`;
+            container.appendChild(el);
+            setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 2500);
         }
 
         // --- CHAT SYSTEM ---
         function toggleChat() {
             chatOpen = !chatOpen;
             const panel = document.getElementById('chat-panel');
-            if (chatOpen) {
-                panel.style.display = 'flex';
-                document.getElementById('chat-badge').style.display = 'none';
-                scrollToBottom();
-            } else {
-                panel.style.display = 'none';
-            }
+            if (chatOpen) { panel.style.display = 'flex'; document.getElementById('chat-badge').style.display = 'none'; scrollToBottom(); } 
+            else { panel.style.display = 'none'; }
         }
-
         function sendChat() {
             const input = document.getElementById('chat-input');
             const text = input.value.trim();
             if (!text || myPlayerId === null || !chatRef) return;
-            chatRef.push({ senderId: myPlayerId, senderName: gameState.players[myPlayerId].name, text: text });
+            const senderName = myPlayerId === 'spectator' ? 'Spectator' : gameState.players[myPlayerId].name;
+            chatRef.push({ senderId: myPlayerId, senderName: senderName, text: text });
             input.value = '';
         }
-
         function displayChatMessage(msg) {
             const container = document.getElementById('chat-messages');
             const div = document.createElement('div');
@@ -687,10 +711,51 @@
             if (!chatOpen && !isMine) document.getElementById('chat-badge').style.display = 'flex';
             scrollToBottom();
         }
+        function scrollToBottom() { const c = document.getElementById('chat-messages'); c.scrollTop = c.scrollHeight; }
 
-        function scrollToBottom() {
-            const container = document.getElementById('chat-messages');
-            container.scrollTop = container.scrollHeight;
+        // --- BLITZ MODE LOGIC ---
+        function manageBlitzTimer() {
+            clearInterval(blitzTimerInterval);
+            const barBg = document.getElementById('blitz-bar-bg');
+            if(!gameState || !gameState.blitzMode || gameState.status !== 'PLAYING') {
+                barBg.style.display = 'none'; return;
+            }
+            
+            barBg.style.display = 'block';
+            const barFill = document.getElementById('blitz-bar-fill');
+            const TIME_LIMIT = 15000;
+
+            blitzTimerInterval = setInterval(() => {
+                // To sync robustly across devices, we use the local Date.now() against the turnStartTime
+                // A small offset exists due to ping, but it's acceptable for casual play.
+                let elapsed = Date.now() - gameState.turnStartTime;
+                let left = Math.max(0, TIME_LIMIT - elapsed);
+                let pct = (left / TIME_LIMIT) * 100;
+                barFill.style.width = `${pct}%`;
+                barFill.style.background = pct < 25 ? 'red' : 'var(--primary)';
+
+                // Auto-skip logic: ONLY the active player forces their own skip to prevent DB race conditions
+                if (left <= 0 && myPlayerId === gameState.turnIndex && gameRef) {
+                    clearInterval(blitzTimerInterval);
+                    forceSkipTurn();
+                }
+            }, 100);
+        }
+
+        function forceSkipTurn() {
+            const newState = JSON.parse(JSON.stringify(gameState)); 
+            const myPlayer = newState.players[myPlayerId];
+            
+            // Penalty: Throw away top card, get new one
+            if(myPlayer.hand.length > 0) myPlayer.hand.splice(0, 1);
+            if(newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
+            selectedCardIndex = null;
+            
+            newState.turnIndex = (newState.turnIndex + 1) % newState.players.length;
+            newState.turnStartTime = Date.now();
+            newState.lastActive = firebase.database.ServerValue.TIMESTAMP;
+            
+            gameRef.set(newState);
         }
 
         // --- SEQUENCE ENGINE ---
@@ -742,27 +807,36 @@
         }
 
         function renderGame() {
-            if (!gameState || myPlayerId === null || !gameState.players || !gameState.players[myPlayerId]) return;
+            if (!gameState || myPlayerId === null) return;
             
             const currentPlayer = gameState.players[gameState.turnIndex];
-            const myPlayer = gameState.players[myPlayerId];
             const isMyTurn = gameState.turnIndex === myPlayerId;
+            const myPlayer = myPlayerId !== 'spectator' ? gameState.players[myPlayerId] : null;
 
-            document.getElementById('game-header').style.borderTopColor = `var(--${currentPlayer.teamClass})`;
-            document.getElementById('turn-indicator').innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
-            document.getElementById('my-identity').innerText = myPlayer.name;
-            document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
+            document.getElementById('game-header').style.borderBottomColor = `var(--${currentPlayer.teamClass})`;
             
+            const turnIndicator = document.getElementById('turn-indicator');
             const hint = document.getElementById('action-hint');
-            if (!isMyTurn) { hint.innerText = "Please wait."; }
-            else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
-            else {
-                const c = myPlayer.hand[selectedCardIndex];
-                if (c.isOneEyed) hint.innerText = "ONE-EYED JACK: Remove opponent's chip.";
-                else if (c.isTwoEyed) hint.innerText = "TWO-EYED JACK: Place chip on open space.";
-                else hint.innerText = "Click matching board space to place.";
+
+            if (myPlayerId === 'spectator') {
+                turnIndicator.innerText = "Spectating 👀";
+                hint.innerText = `${currentPlayer.name.split(' ')[0]}'s Turn`;
+                document.getElementById('my-identity').innerText = "Spectator";
+            } else {
+                turnIndicator.innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
+                document.getElementById('my-identity').innerText = myPlayer.name;
+                if (!isMyTurn) { hint.innerText = "Please wait."; }
+                else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
+                else {
+                    const c = myPlayer.hand[selectedCardIndex];
+                    if (c.isOneEyed) hint.innerText = "ONE-EYED: Remove opponent's chip.";
+                    else if (c.isTwoEyed) hint.innerText = "TWO-EYED: Place chip on open space.";
+                    else hint.innerText = "Click matching board space.";
+                }
             }
 
+            document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
+            
             const boardDiv = document.getElementById('board');
             boardDiv.innerHTML = '<svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>';
             
@@ -782,33 +856,43 @@
                                      <span class="card-suit ${isRed ? 'red' : 'black'}">${square.card.suit}</span>`;
                 }
 
-                if (square.owner) { div.innerHTML += `<div class="chip ${square.owner}"></div>`; }
+                if (square.owner) { 
+                    // Feature: Last Move Highlight
+                    const isLastMove = index === gameState.lastMoveIndex ? 'last-move' : '';
+                    div.innerHTML += `<div class="chip ${square.owner} ${isLastMove}"></div>`; 
+                }
                 div.onclick = () => handleBoardClick(index);
                 boardDiv.appendChild(div);
             });
 
             setTimeout(drawSequenceLines, 50);
 
-            const handDiv = document.getElementById('hand');
-            handDiv.innerHTML = '';
-            if(myPlayer.hand) {
-                myPlayer.hand.forEach((card, index) => {
-                    const isRed = card.suit === '♥' || card.suit === '♦';
-                    const div = document.createElement('div');
-                    div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
-                    const richColor = isRed ? 'red' : 'black';
-                    
-                    div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                     <span class="card-val-rich ${richColor}">${card.value}</span>
-                                     <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
-                    
-                    if(card.value === 'J') {
-                        div.innerHTML += `<div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
-                    }
-                    
-                    div.onclick = () => { if(isMyTurn) { selectedCardIndex = index; renderGame(); } };
-                    handDiv.appendChild(div);
-                });
+            if (myPlayer) {
+                const handDiv = document.getElementById('hand');
+                handDiv.innerHTML = '';
+                if(myPlayer.hand) {
+                    myPlayer.hand.forEach((card, index) => {
+                        const isRed = card.suit === '♥' || card.suit === '♦';
+                        const div = document.createElement('div');
+                        div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
+                        const richColor = isRed ? 'red' : 'black';
+                        
+                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                         <span class="card-val-rich ${richColor}">${card.value}</span>
+                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
+                        
+                        if(card.value === 'J') div.innerHTML += `<div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
+                        
+                        div.onclick = () => { 
+                            if(isMyTurn) { 
+                                selectedCardIndex = index; 
+                                playHapticSound('select');
+                                renderGame(); 
+                            } 
+                        };
+                        handDiv.appendChild(div);
+                    });
+                }
             }
         }
 
@@ -816,36 +900,25 @@
             const svg = document.getElementById('sequence-lines');
             if (!svg || !gameState || !gameState.scoredSequences) return;
             svg.innerHTML = '';
-
             const boardRect = document.getElementById('board').getBoundingClientRect();
-
             Object.values(gameState.scoredSequences).flat().forEach(seq => {
                 const startSq = document.getElementById(`sq-${seq[0].replace(',','-')}`);
                 const endSq = document.getElementById(`sq-${seq[4].replace(',','-')}`);
                 if (!startSq || !endSq) return;
-
-                const sRect = startSq.getBoundingClientRect();
-                const eRect = endSq.getBoundingClientRect();
-
-                const x1 = sRect.left - boardRect.left + (sRect.width / 2);
-                const y1 = sRect.top - boardRect.top + (sRect.height / 2);
-                const x2 = eRect.left - boardRect.left + (eRect.width / 2);
-                const y2 = eRect.top - boardRect.top + (eRect.height / 2);
+                const sRect = startSq.getBoundingClientRect(); const eRect = endSq.getBoundingClientRect();
+                const x1 = sRect.left - boardRect.left + (sRect.width / 2); const y1 = sRect.top - boardRect.top + (sRect.height / 2);
+                const x2 = eRect.left - boardRect.left + (eRect.width / 2); const y2 = eRect.top - boardRect.top + (eRect.height / 2);
 
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
-                line.setAttribute('x1', x1); line.setAttribute('y1', y1);
-                line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#eab308'); 
-                line.setAttribute('stroke-width', '5');
-                line.setAttribute('stroke-linecap', 'round');
-                
+                line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
+                line.setAttribute('stroke', '#eab308'); line.setAttribute('stroke-width', '5'); line.setAttribute('stroke-linecap', 'round');
                 svg.appendChild(line);
             });
         }
         window.addEventListener('resize', drawSequenceLines);
 
         function handleBoardClick(boardIndex) {
-            if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
+            if (myPlayerId === 'spectator' || gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
 
             const newState = JSON.parse(JSON.stringify(gameState)); 
             const myPlayer = newState.players[myPlayerId];
@@ -853,40 +926,33 @@
             
             const boardArray = Array.isArray(newState.board) ? newState.board : Object.values(newState.board);
             const targetSquare = boardArray[boardIndex];
-            
-            const targetX = boardIndex % 10;
-            const targetY = Math.floor(boardIndex / 10);
+            const targetX = boardIndex % 10; const targetY = Math.floor(boardIndex / 10);
 
             let validMove = false;
             if (targetSquare.type === 'FREE') return; 
 
             if (playedCard.isOneEyed) {
                 if (targetSquare.owner && targetSquare.owner !== myPlayer.teamClass) {
-                    if (isChipLocked(newState, targetX, targetY)) {
-                        showCustomAlert("Cannot remove a marker chip that is part of a completed SEQUENCE!");
-                        return; 
-                    }
-                    boardArray[boardIndex].owner = null; 
-                    validMove = true;
+                    if (isChipLocked(newState, targetX, targetY)) return showCustomAlert("Chip locked in a Sequence!");
+                    boardArray[boardIndex].owner = null; validMove = true;
                 }
             } else if (playedCard.isTwoEyed) {
-                if (!targetSquare.owner) {
-                    boardArray[boardIndex].owner = myPlayer.teamClass;
-                    validMove = true;
-                }
+                if (!targetSquare.owner) { boardArray[boardIndex].owner = myPlayer.teamClass; validMove = true; }
             } else {
                 const isMatch = playedCard.value === targetSquare.card.value && playedCard.suit === targetSquare.card.suit;
-                if (isMatch && !targetSquare.owner) {
-                    boardArray[boardIndex].owner = myPlayer.teamClass;
-                    validMove = true;
-                }
+                if (isMatch && !targetSquare.owner) { boardArray[boardIndex].owner = myPlayer.teamClass; validMove = true; }
             }
 
             if (validMove) {
+                playHapticSound('place');
                 newState.board = boardArray; 
                 myPlayer.hand.splice(selectedCardIndex, 1);
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
+                
+                newState.lastMoveIndex = boardIndex; // Record Last Move
+                newState.turnStartTime = Date.now(); // Reset Blitz Timer
+                newState.lastActive = firebase.database.ServerValue.TIMESTAMP;
 
                 newState.scoredSequences = {};
                 ['team-red', 'team-blue', 'team-green'].forEach(t => {
@@ -897,15 +963,12 @@
                 const myTeamSeqs = newState.scoredSequences[myPlayer.teamClass] || [];
 
                 if (myTeamSeqs.length >= newState.requiredSequences) {
-                    newState.status = 'WON';
-                    newState.winner = myPlayer.teamClass.replace('team-', '');
+                    newState.status = 'WON'; newState.winner = myPlayer.teamClass.replace('team-', '');
                 } else {
                     newState.turnIndex = (newState.turnIndex + 1) % newState.players.length;
                 }
                 
-                gameRef.set(newState).catch(error => {
-                    showCustomAlert(`Play failed: ${error.message}`);
-                });
+                gameRef.set(newState).catch(error => showCustomAlert(`Play failed: ${error.message}`));
             }
         }
     </script>
