@@ -191,6 +191,10 @@
         .hand-card.selected { transform: translateY(-12px) rotate(-4deg); border-color: var(--primary); box-shadow: 0 8px 16px rgba(199, 161, 122, 0.3); z-index: 10; }
         .jack-label { position: absolute; bottom: 8px; font-size: 0.5rem; font-weight: 700; background: var(--text-primary); color: white; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px; z-index: 2;}
         
+        /* Face Down Card Styling */
+        .hand-card.face-down { background: var(--primary); border-color: var(--primary-hover); justify-content: center; }
+        .hand-card.face-down .card-val-rich { color: white; font-size: 2.5rem; font-weight: 800; }
+
         .team-red { background-color: var(--team-red); border-color: var(--team-red); }
         .team-blue { background-color: var(--team-blue); border-color: var(--team-blue); }
         .team-green { background-color: var(--team-green); border-color: var(--team-green); }
@@ -407,7 +411,7 @@
                     osc.start(); osc.stop(audioCtx.currentTime + 0.05);
                     if(navigator.vibrate) navigator.vibrate(10);
                 }
-            } catch(e) {} // Failsafe for older browsers
+            } catch(e) {} 
         }
 
         // --- THEME SYNC ---
@@ -513,7 +517,6 @@
                 clearInterval(blitzTimerInterval);
                 document.getElementById('blitz-bar-bg').style.display = 'none';
 
-                // Update Profile once per game
                 if (!hasCountedGame && myPlayerId !== null) {
                     hasCountedGame = true;
                     localProfile.played++;
@@ -557,7 +560,6 @@
                 document.getElementById('game').style.display = 'flex';
                 document.getElementById('game-room-name-display').innerText = currentRoomId;
                 
-                // Spectator UI adjustment
                 if (myPlayerId === 'spectator') {
                     document.getElementById('hand-container').style.display = 'none';
                 } else {
@@ -605,7 +607,8 @@
             let cardsToDeal = (count === 3 || count === 4) ? 6 : (count === 6 ? 5 : 7);
             let players = [];
             for(let i = 0; i < count; i++) {
-                players.push({ id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal) });
+                // Initialize players as NOT connected yet
+                players.push({ id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal), connected: false });
             }
 
             let board = STATIC_BOARD.map(str => {
@@ -615,7 +618,7 @@
 
             chatRef.set(null); emotesRef.set(null);
             gameRef.set({
-                status: 'PLAYING', playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, 
+                status: 'PLAYING', matchStarted: false, playerCount: count, requiredSequences: numTeams === 3 ? 1 : 2, 
                 turnIndex: 0, deck: deck, players: players, board: board, scoredSequences: {}, 
                 roomName: roomName, lastMoveIndex: null, lastActive: firebase.database.ServerValue.TIMESTAMP,
                 blitzMode: blitzEnabled, turnStartTime: Date.now()
@@ -635,9 +638,23 @@
             document.getElementById('overlay').style.display = 'flex';
             document.getElementById('overlay').innerHTML = `<h2 style="color: white;" id="overlay-text">Joining...</h2>`;
 
-            gameRef.child(`players/${myPlayerId}/name`).set(myName).then(() => {
+            // Update player state to connected
+            gameRef.child(`players/${myPlayerId}`).update({ name: myName, connected: true }).then(() => {
                 document.getElementById('overlay').style.display = 'none';
-                showGameView();
+                
+                // Immediately check if this join completes the lobby
+                gameRef.once('value').then(snap => {
+                    const st = snap.val();
+                    if (st && st.status === 'PLAYING' && !st.matchStarted) {
+                        const allJoined = st.players.every(p => p.connected);
+                        if (allJoined) {
+                            // Safely start the match and trigger the blitz timer
+                            gameRef.update({ matchStarted: true, turnStartTime: Date.now() });
+                        }
+                    }
+                });
+
+                try { showGameView(); } catch(e) { showCustomAlert("UI Rendering error: " + e.message); }
             }).catch(error => {
                 myPlayerId = null; document.getElementById('overlay').style.display = 'none';
                 showCustomAlert(`Connection failed: ${error.message}`); showLobbySelector(true);
@@ -669,18 +686,15 @@
             if(!emotesRef) return;
             const sender = myPlayerId === 'spectator' ? 'Spectator' : (gameState.players[myPlayerId]?.name || 'Player');
             emotesRef.push({ emoji, sender, timestamp: Date.now() }).then(() => {
-                // Cleanup old emotes in DB occasionally
                 emotesRef.once('value', s => { if(s.numChildren() > 10) { let keys = Object.keys(s.val()); emotesRef.child(keys[0]).remove(); }});
             });
         }
         function displayEmote(data) {
-            // Guard against stale emotes on load
             if (Date.now() - data.timestamp > 5000) return; 
             const container = document.getElementById('board-container');
             const el = document.createElement('div');
             el.className = 'floating-emote';
             el.innerHTML = `${data.emoji}<div class="emote-sender-tag">${data.sender}</div>`;
-            // Randomize horizontal float slightly
             el.style.left = `${50 + (Math.random() * 20 - 10)}%`;
             container.appendChild(el);
             setTimeout(() => { if(el.parentNode) el.parentNode.removeChild(el); }, 2500);
@@ -717,7 +731,7 @@
         function manageBlitzTimer() {
             clearInterval(blitzTimerInterval);
             const barBg = document.getElementById('blitz-bar-bg');
-            if(!gameState || !gameState.blitzMode || gameState.status !== 'PLAYING') {
+            if(!gameState || !gameState.blitzMode || gameState.status !== 'PLAYING' || !gameState.matchStarted) {
                 barBg.style.display = 'none'; return;
             }
             
@@ -726,15 +740,12 @@
             const TIME_LIMIT = 15000;
 
             blitzTimerInterval = setInterval(() => {
-                // To sync robustly across devices, we use the local Date.now() against the turnStartTime
-                // A small offset exists due to ping, but it's acceptable for casual play.
                 let elapsed = Date.now() - gameState.turnStartTime;
                 let left = Math.max(0, TIME_LIMIT - elapsed);
                 let pct = (left / TIME_LIMIT) * 100;
                 barFill.style.width = `${pct}%`;
                 barFill.style.background = pct < 25 ? 'red' : 'var(--primary)';
 
-                // Auto-skip logic: ONLY the active player forces their own skip to prevent DB race conditions
                 if (left <= 0 && myPlayerId === gameState.turnIndex && gameRef) {
                     clearInterval(blitzTimerInterval);
                     forceSkipTurn();
@@ -746,7 +757,6 @@
             const newState = JSON.parse(JSON.stringify(gameState)); 
             const myPlayer = newState.players[myPlayerId];
             
-            // Penalty: Throw away top card, get new one
             if(myPlayer.hand.length > 0) myPlayer.hand.splice(0, 1);
             if(newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
             selectedCardIndex = null;
@@ -817,25 +827,35 @@
             
             const turnIndicator = document.getElementById('turn-indicator');
             const hint = document.getElementById('action-hint');
+            const deckCountDisplay = document.getElementById('deck-count');
 
             if (myPlayerId === 'spectator') {
                 turnIndicator.innerText = "Spectating 👀";
                 hint.innerText = `${currentPlayer.name.split(' ')[0]}'s Turn`;
                 document.getElementById('my-identity').innerText = "Spectator";
+                deckCountDisplay.innerText = gameState.matchStarted ? (gameState.deck ? gameState.deck.length : 0) : "Hidden";
             } else {
-                turnIndicator.innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
-                document.getElementById('my-identity').innerText = myPlayer.name;
-                if (!isMyTurn) { hint.innerText = "Please wait."; }
-                else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
-                else {
-                    const c = myPlayer.hand[selectedCardIndex];
-                    if (c.isOneEyed) hint.innerText = "ONE-EYED: Remove opponent's chip.";
-                    else if (c.isTwoEyed) hint.innerText = "TWO-EYED: Place chip on open space.";
-                    else hint.innerText = "Click matching board space.";
+                if (!gameState.matchStarted) {
+                    const joinedCount = gameState.players.filter(p => p.connected).length;
+                    turnIndicator.innerText = "Waiting...";
+                    hint.innerText = `${joinedCount} / ${gameState.playerCount} Joined`;
+                    document.getElementById('my-identity').innerText = myPlayer.name;
+                    deckCountDisplay.innerText = "Hidden";
+                } else {
+                    turnIndicator.innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
+                    document.getElementById('my-identity').innerText = myPlayer.name;
+                    deckCountDisplay.innerText = gameState.deck ? gameState.deck.length : 0;
+
+                    if (!isMyTurn) { hint.innerText = "Please wait."; }
+                    else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
+                    else {
+                        const c = myPlayer.hand[selectedCardIndex];
+                        if (c.isOneEyed) hint.innerText = "ONE-EYED: Remove opponent's chip.";
+                        else if (c.isTwoEyed) hint.innerText = "TWO-EYED: Place chip on open space.";
+                        else hint.innerText = "Click matching board space.";
+                    }
                 }
             }
-
-            document.getElementById('deck-count').innerText = gameState.deck ? gameState.deck.length : 0;
             
             const boardDiv = document.getElementById('board');
             boardDiv.innerHTML = '<svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>';
@@ -857,7 +877,6 @@
                 }
 
                 if (square.owner) { 
-                    // Feature: Last Move Highlight
                     const isLastMove = index === gameState.lastMoveIndex ? 'last-move' : '';
                     div.innerHTML += `<div class="chip ${square.owner} ${isLastMove}"></div>`; 
                 }
@@ -872,24 +891,32 @@
                 handDiv.innerHTML = '';
                 if(myPlayer.hand) {
                     myPlayer.hand.forEach((card, index) => {
-                        const isRed = card.suit === '♥' || card.suit === '♦';
                         const div = document.createElement('div');
                         div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
-                        const richColor = isRed ? 'red' : 'black';
-                        
-                        div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
-                                         <span class="card-val-rich ${richColor}">${card.value}</span>
-                                         <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
-                        
-                        if(card.value === 'J') div.innerHTML += `<div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
-                        
-                        div.onclick = () => { 
-                            if(isMyTurn) { 
-                                selectedCardIndex = index; 
-                                playHapticSound('select');
-                                renderGame(); 
-                            } 
-                        };
+
+                        if (!gameState.matchStarted) {
+                            // Render Face Down Card
+                            div.classList.add('face-down');
+                            div.innerHTML = `<span class="card-val-rich" style="color: white; font-size: 2.2rem; font-weight: 800;">S</span>`;
+                        } else {
+                            // Render Normal Face Up Card
+                            const isRed = card.suit === '♥' || card.suit === '♦';
+                            const richColor = isRed ? 'red' : 'black';
+                            
+                            div.innerHTML = `<span class="rich-suit-tl ${richColor}">${card.suit}</span>
+                                             <span class="card-val-rich ${richColor}">${card.value}</span>
+                                             <span class="rich-suit-br ${richColor}">${card.suit}</span>`;
+                            
+                            if(card.value === 'J') div.innerHTML += `<div class="jack-label">${card.isOneEyed ? '1 eye' : '2 eyes'}</div>`;
+                            
+                            div.onclick = () => { 
+                                if(isMyTurn) { 
+                                    selectedCardIndex = index; 
+                                    playHapticSound('select');
+                                    renderGame(); 
+                                } 
+                            };
+                        }
                         handDiv.appendChild(div);
                     });
                 }
@@ -918,7 +945,11 @@
         window.addEventListener('resize', drawSequenceLines);
 
         function handleBoardClick(boardIndex) {
-            if (myPlayerId === 'spectator' || gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
+            if (myPlayerId === 'spectator' || !gameState.matchStarted) {
+                if (!gameState.matchStarted) showCustomAlert("Waiting for all players to join...");
+                return;
+            }
+            if (gameState.turnIndex !== myPlayerId || selectedCardIndex === null || !gameRef) return; 
 
             const newState = JSON.parse(JSON.stringify(gameState)); 
             const myPlayer = newState.players[myPlayerId];
@@ -950,8 +981,8 @@
                 if (newState.deck && newState.deck.length > 0) myPlayer.hand.push(newState.deck.pop());
                 selectedCardIndex = null;
                 
-                newState.lastMoveIndex = boardIndex; // Record Last Move
-                newState.turnStartTime = Date.now(); // Reset Blitz Timer
+                newState.lastMoveIndex = boardIndex; 
+                newState.turnStartTime = Date.now(); 
                 newState.lastActive = firebase.database.ServerValue.TIMESTAMP;
 
                 newState.scoredSequences = {};
