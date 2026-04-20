@@ -5,42 +5,45 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Sequence Live</title>
     <style>
-        /* --- PREMIUM SLATE & GOLD "EASY" UI --- */
+        /* --- iOS NATIVE "CLEAN BRUTALISM" UI --- */
         :root {
-            --bg: #F0F4F7; 
+            /* High Contrast, Modern Palette */
+            --bg: #F4F4F5; 
             --surface: #FFFFFF; 
-            --border: #D1D5DB; 
-            --text-primary: #1F2937; 
-            --text-secondary: #6B7280; 
+            --border: #E4E4E7; 
+            --text-primary: #111111; /* Stark Black */
+            --text-secondary: #71717A; 
             
-            --primary: #C7A17A; 
-            --primary-hover: #A08160;
-            --primary-light: #F9F1E6; 
+            --primary: #F97316; /* Vibrant Mango/Orange */
+            --primary-hover: #EA580C;
+            --primary-light: #FFEDD5; 
             
             --board-bg: #FFFFFF;
             --card-bg: #FFFFFF;
-            --card-text-black: #111827;
-            --card-text-red: #B91C1C;
-            --free-bg: #C7A17A; 
+            --card-text-black: #111111;
+            --card-text-red: #EF4444;
+            --free-bg: #F97316; 
             --free-text: #FFFFFF;
             
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.05); 
+            --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.06); 
+            --shadow-toolbar: 0 -4px 20px rgba(0, 0, 0, 0.05);
             
-            --team-red: #B91C1C; 
-            --team-blue: #1E40AF; 
-            --team-green: #065F46; 
+            --team-red: #EF4444; 
+            --team-blue: #3B82F6; 
+            --team-green: #10B981; 
         }
 
         .dark-mode {
-            --bg: #111827; 
-            --surface: #1F2937; 
-            --border: #374151;
-            --text-primary: #F9FAFB;
-            --text-secondary: #9CA3AF;
-            --board-bg: #111827;
-            --card-bg: #F9FAFB; 
-            --shadow-soft: 0 10px 30px rgba(0, 0, 0, 0.3);
-            --primary-light: rgba(199, 161, 122, 0.15);
+            --bg: #000000; /* Deep iOS Black */
+            --surface: #18181B; 
+            --border: #27272A;
+            --text-primary: #FAFAFA;
+            --text-secondary: #A1A1AA;
+            --board-bg: #18181B;
+            --card-bg: #FAFAFA; 
+            --shadow-soft: 0 12px 32px rgba(0, 0, 0, 0.4);
+            --shadow-toolbar: 0 -4px 20px rgba(0, 0, 0, 0.5);
+            --primary-light: rgba(249, 115, 22, 0.15);
         }
 
         /* --- STRICT NO-SCROLL VIEWPORT MATRIX --- */
@@ -53,102 +56,97 @@
         
         #app-container {
             width: 100%; max-width: 800px; height: 100dvh; display: flex; flex-direction: column;
-            padding: 0.5rem; box-sizing: border-box; position: relative;
+            padding: 0; box-sizing: border-box; position: relative;
+            background: var(--bg);
         }
 
         #lobby, #game { display: none; flex-direction: column; height: 100%; width: 100%; }
 
+        /* --- LOBBY REDESIGN --- */
         #lobby { 
-            overflow-y: auto; padding: 1rem; padding-top: 2rem; display: flex; 
+            overflow-y: auto; padding: 2rem 1.5rem; display: flex; 
             flex-direction: column; align-items: center; width: 100%; box-sizing: border-box; margin: auto;
         }
         
-        .lobby-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin-bottom: 1rem; }
-        .lobby-header-row h1 { margin: 0; color: var(--primary); font-size: 2rem; font-weight: 800; letter-spacing: -1px; }
+        .lobby-header-row { display: flex; justify-content: space-between; align-items: center; width: 100%; max-width: 400px; margin-bottom: 2rem; }
+        .lobby-header-row h1 { margin: 0; color: var(--text-primary); font-size: 2.2rem; font-weight: 900; letter-spacing: -1px; }
 
         .profile-badge {
-            background: var(--surface); padding: 8px 16px; border-radius: 999px; box-shadow: var(--shadow-soft);
-            font-size: 0.85rem; font-weight: 700; color: var(--text-primary); margin-bottom: 1.5rem; border: 1px solid var(--border);
+            background: var(--primary-light); padding: 8px 16px; border-radius: 999px;
+            font-size: 0.85rem; font-weight: 800; color: var(--primary); margin-bottom: 2rem; border: none;
         }
 
         .panel { 
-            background: var(--surface); padding: 2rem 1.5rem; border-radius: 20px; border: none;
-            box-shadow: var(--shadow-soft); margin-bottom: 1rem; width: 100%; max-width: 400px; box-sizing: border-box;
-            transition: background 0.3s ease, box-shadow 0.3s ease;
+            background: var(--surface); padding: 2rem 1.5rem; border-radius: 24px; border: 1px solid var(--border);
+            box-shadow: var(--shadow-soft); margin-bottom: 1.5rem; width: 100%; max-width: 400px; box-sizing: border-box;
+            transition: background 0.3s ease, border 0.3s ease;
         }
         
         button.action-btn { 
-            width: 100%; padding: 1rem; background: var(--primary); color: #FFFFFF; border: none; border-radius: 999px; 
-            font-size: 1rem; font-weight: 700; cursor: pointer; margin-top: 0.5rem; transition: background 0.2s, transform 0.1s;
+            width: 100%; padding: 1.1rem; background: var(--text-primary); color: var(--bg); border: none; border-radius: 16px; 
+            font-size: 1rem; font-weight: 800; cursor: pointer; margin-top: 1rem; transition: background 0.2s, transform 0.1s;
         }
-        button.action-btn:active { transform: scale(0.98); background: var(--primary-hover); }
+        button.action-btn.primary { background: var(--primary); color: #FFFFFF; }
+        button.action-btn:active { transform: scale(0.96); opacity: 0.9; }
         
         select, input { 
-            width: 100%; padding: 1rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); 
+            width: 100%; padding: 1.1rem 1.2rem; border-radius: 12px; border: 1px solid var(--border); 
             background: var(--bg); color: var(--text-primary); box-sizing: border-box; font-size: 1rem; 
-            outline: none; transition: border-color 0.2s, background 0.3s; font-weight: 500;
+            outline: none; transition: border-color 0.2s, background 0.3s; font-weight: 700;
         }
         select:focus, input:focus { border-color: var(--primary); background: var(--surface); }
 
-        /* --- REDESIGNED GAME HEADER --- */
+        h3 { font-size: 1.4rem; font-weight: 900; letter-spacing: -0.5px; margin: 0 0 0.5rem 0; color: var(--text-primary); }
+        .subtitle { font-size: 0.9rem; color: var(--text-secondary); margin: 0 0 1.5rem 0; font-weight: 500; }
+        label { font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+
+        /* --- REDESIGNED GAME HEADER (Text Only, No Buttons) --- */
         .header { 
-            flex-shrink: 0; display: flex; justify-content: space-between; align-items: center; 
-            background: var(--surface); padding: 1rem 1.25rem; border-radius: 16px; 
-            box-shadow: var(--shadow-soft); border-top: 4px solid transparent; 
-            margin-bottom: 0.5rem; min-height: 80px; position: relative; overflow: hidden;
+            flex-shrink: 0; display: flex; justify-content: space-between; align-items: flex-start; 
+            background: transparent; padding: 1rem 1.5rem 0.5rem 1.5rem; 
         }
         
-        .header-left { flex: 1; display: flex; flex-direction: column; justify-content: center; text-align: left; z-index: 2; }
-        .header-center { flex: 1; display: flex; justify-content: center; align-items: center; gap: 0.5rem; z-index: 2; }
-        .header-right { flex: 1; display: flex; align-items: center; justify-content: flex-end; text-align: right; z-index: 2; }
+        .header-left { flex: 1; display: flex; flex-direction: column; justify-content: flex-start; text-align: left; }
+        .header-right { flex: 1; display: flex; flex-direction: column; align-items: flex-end; justify-content: flex-start; text-align: right; }
 
-        h2#turn-indicator { margin: 0; font-size: 1.15rem; font-weight: 800; letter-spacing: -0.5px; }
-        .action-text { color: var(--primary); font-weight: 700; font-size: 0.85rem; margin-top: 4px; }
+        h2#turn-indicator { margin: 0; font-size: 1.8rem; font-weight: 900; letter-spacing: -1px; color: var(--text-primary); }
+        .action-text { color: var(--primary); font-weight: 800; font-size: 0.9rem; margin-top: 2px; }
+
+        .stat-text { font-size: 0.85rem; font-weight: 700; color: var(--text-secondary); margin-bottom: 2px; }
+        .stat-text span { color: var(--text-primary); font-weight: 900; }
 
         /* Blitz Timer Bar */
-        .blitz-bar-bg { position: absolute; bottom: 0; left: 0; width: 100%; height: 6px; background: var(--border); display: none; z-index: 1;}
-        .blitz-bar-fill { height: 100%; width: 100%; background: var(--team-red); transition: width 0.1s linear; }
+        .blitz-bar-bg { width: calc(100% - 3rem); height: 4px; background: var(--border); margin: 0.5rem 1.5rem; border-radius: 999px; display: none; overflow: hidden; flex-shrink: 0; }
+        .blitz-bar-fill { height: 100%; width: 100%; background: var(--primary); transition: width 0.1s linear; }
 
-        /* Static Icons */
-        .icon-btn { 
-            background: var(--surface); color: var(--text-primary); border: none; border-radius: 50%; 
-            width: 40px; height: 40px; display: flex; align-items: center; justify-content: center; 
-            cursor: pointer; font-size: 1.1rem; box-shadow: 0 4px 10px rgba(0,0,0,0.1); padding: 0; transition: transform 0.1s; position: relative;
+        /* --- BOTTOM NATIVE TOOLBAR --- */
+        .bottom-toolbar {
+            flex-shrink: 0; width: 100%; background: var(--surface); padding: 0.75rem 1.5rem 1.5rem 1.5rem; 
+            box-sizing: border-box; display: flex; justify-content: space-between; align-items: center;
+            box-shadow: var(--shadow-toolbar); border-top: 1px solid var(--border);
+            padding-bottom: env(safe-area-inset-bottom, 1.5rem); /* iOS Safe Area */
         }
-        .icon-btn:active { transform: scale(0.9); }
-        .icon-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.6rem; font-weight: bold; width: 14px; height: 14px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
 
-        .exit-btn { background: transparent; color: var(--text-secondary); font-size: 1.5rem; border: none; margin-left: 10px; cursor: pointer; transition: color 0.2s; padding: 0; line-height: 1; }
-        .exit-btn:active { color: var(--team-red); transform: scale(0.9); }
-
-        /* Emote Picker */
-        #emote-picker {
-            display: none; position: absolute; top: 70px; left: 50%; transform: translateX(-50%);
-            background: var(--surface); border-radius: 999px; padding: 8px 16px; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
-            gap: 10px; z-index: 200; border: 1px solid var(--border);
+        .tool-btn { 
+            background: var(--bg); color: var(--text-primary); border: none; border-radius: 50%; 
+            width: 48px; height: 48px; display: flex; align-items: center; justify-content: center; 
+            cursor: pointer; font-size: 1.3rem; transition: transform 0.1s, background 0.2s; position: relative;
         }
-        .emote-option { font-size: 1.5rem; cursor: pointer; user-select: none; transition: transform 0.1s; }
-        .emote-option:active { transform: scale(1.3); }
-
-        /* Floating Emotes Animation */
-        @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, 0px) scale(1.2); } 80% { opacity: 1; transform: translate(-50%, -40px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -60px) scale(0.8); } }
-        .floating-emote {
-            position: absolute; left: 50%; top: 30%; pointer-events: none; z-index: 400;
-            font-size: 3.5rem; animation: floatUp 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
-            text-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .emote-sender-tag { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.8rem; font-weight: 800; color: white; background: rgba(0,0,0,0.6); padding: 2px 8px; border-radius: 10px; white-space: nowrap; }
+        .tool-btn:active { transform: scale(0.9); background: var(--border); }
+        .tool-btn .badge { position: absolute; top: -2px; right: -2px; background: var(--team-red); color: white; font-size: 0.65rem; font-weight: 800; width: 16px; height: 16px; border-radius: 50%; display: none; align-items: center; justify-content: center; }
+        .tool-btn.exit-btn { background: transparent; color: var(--text-secondary); font-size: 1.8rem; }
+        .tool-btn.exit-btn:active { color: var(--team-red); }
 
         /* Board Scaling Matrix */
         .board-container {
             flex-grow: 1; display: flex; justify-content: center; align-items: center;
-            min-height: 0; width: 100%; padding: 0; margin: 0.25rem 0; position: relative;
+            min-height: 0; width: 100%; padding: 0 1rem; margin: 0.25rem 0; box-sizing: border-box;
         }
 
         .board { 
             width: 100%; max-height: 100%; aspect-ratio: 1 / 1; 
             display: grid; grid-template-columns: repeat(10, 1fr); grid-template-rows: repeat(10, 1fr); gap: 2px; 
-            background: var(--border); padding: 4px; border-radius: 12px; 
+            background: var(--border); padding: 4px; border-radius: 16px; 
             box-sizing: border-box; position: relative; box-shadow: var(--shadow-soft);
         }
         
@@ -156,7 +154,7 @@
             background: var(--card-bg); border-radius: 4px; display: flex; flex-direction: column; 
             align-items: center; justify-content: center; position: relative; cursor: pointer; user-select: none;
         }
-        .square.free { background: var(--free-bg); color: var(--free-text); font-weight: 800; font-size: clamp(0.5rem, 1.5vw, 0.8rem); }
+        .square.free { background: var(--free-bg); color: var(--free-text); font-weight: 900; font-size: clamp(0.5rem, 1.5vw, 0.8rem); }
         
         .card-val { font-size: clamp(0.6rem, 2vw, 1.1rem); font-weight: 800; line-height: 1; }
         .card-suit { font-size: clamp(0.7rem, 2.5vw, 1.3rem); line-height: 1; margin-top: -1px; }
@@ -164,36 +162,35 @@
         
         .chip { 
             position: absolute; inset: 2px; border-radius: 50%; opacity: 0.95; 
-            border: 1px solid rgba(255,255,255,0.2); z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
+            border: 2px solid rgba(255,255,255,0.3); z-index: 5; box-shadow: 0 2px 4px rgba(0,0,0,0.15); 
         }
         
         /* Highlight Last Move Feature */
-        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(199, 161, 122, 0.8); } 100% { box-shadow: 0 0 0 12px rgba(199, 161, 122, 0); } }
+        @keyframes pulse-ring { 0% { box-shadow: 0 0 0 0 rgba(249, 115, 22, 0.8); } 100% { box-shadow: 0 0 0 12px rgba(249, 115, 22, 0); } }
         .chip.last-move { animation: pulse-ring 1.5s infinite; border: 2px solid var(--primary); z-index: 6; }
 
         /* Player Hand */
         .hand-container {
-            flex-shrink: 0; background: var(--surface); padding: 0.75rem 1rem; border-radius: 16px; 
-            box-shadow: var(--shadow-soft); height: 135px; display: flex; flex-direction: column; align-items: center; justify-content: center; box-sizing: border-box;
+            flex-shrink: 0; background: transparent; padding: 0 1rem 1rem 1rem;
+            height: 120px; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; box-sizing: border-box;
         }
         
-        .hand { display: flex; gap: 0.5rem; justify-content: center; align-items: center; height: 100%; width: 100%; }
+        .hand { display: flex; gap: 0.5rem; justify-content: center; align-items: flex-end; height: 100%; width: 100%; }
         .hand-card { 
             flex: 1; min-width: 0; max-width: 75px; height: 100%; max-height: 105px; 
-            background: var(--card-bg); border-radius: 8px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
-            cursor: pointer; position: relative; box-shadow: 0 2px 5px rgba(0,0,0,0.08); border: 2px solid var(--border);
+            background: var(--card-bg); border-radius: 12px; display: flex; flex-direction: column; align-items: center; justify-content: space-between; 
+            cursor: pointer; position: relative; box-shadow: var(--shadow-soft); border: 1px solid var(--border);
             transition: transform 0.2s cubic-bezier(0.175, 0.885, 0.32, 1.275), border 0.2s ease, box-shadow 0.2s ease; padding: 6px; box-sizing: border-box;
         }
-        .hand-card .rich-suit-tl { position: absolute; top: 4px; left: 5px; font-size: 0.65rem; font-weight: 800; line-height: 1; }
-        .hand-card .rich-suit-br { position: absolute; bottom: 4px; right: 5px; font-size: 0.65rem; font-weight: 800; line-height: 1; transform: rotate(180deg); }
-        .hand-card .card-val-rich { font-size: clamp(1.2rem, 4vw, 2rem); font-weight: 900; line-height: 1; margin: auto; }
+        .hand-card .rich-suit-tl { position: absolute; top: 4px; left: 6px; font-size: 0.7rem; font-weight: 800; line-height: 1; }
+        .hand-card .rich-suit-br { position: absolute; bottom: 4px; right: 6px; font-size: 0.7rem; font-weight: 800; line-height: 1; transform: rotate(180deg); }
+        .hand-card .card-val-rich { font-size: clamp(1.2rem, 4vw, 2.2rem); font-weight: 900; line-height: 1; margin: auto; }
 
-        .hand-card.selected { transform: translateY(-12px) rotate(-4deg); border-color: var(--primary); box-shadow: 0 8px 16px rgba(199, 161, 122, 0.3); z-index: 10; }
-        .jack-label { position: absolute; bottom: 8px; font-size: 0.5rem; font-weight: 700; background: var(--text-primary); color: white; padding: 3px 8px; border-radius: 4px; text-transform: uppercase; line-height: 1; letter-spacing: 0.5px; z-index: 2;}
+        .hand-card.selected { transform: translateY(-12px) rotate(-4deg); border-color: var(--primary); box-shadow: 0 12px 24px rgba(249, 115, 22, 0.2); z-index: 10; }
+        .jack-label { position: absolute; bottom: 8px; font-size: 0.55rem; font-weight: 800; background: var(--text-primary); color: var(--bg); padding: 3px 8px; border-radius: 6px; text-transform: uppercase; line-height: 1; z-index: 2;}
         
-        /* Face Down Card Styling */
-        .hand-card.face-down { background: var(--primary); border-color: var(--primary-hover); justify-content: center; }
-        .hand-card.face-down .card-val-rich { color: white; font-size: 2.5rem; font-weight: 800; }
+        .hand-card.face-down { background: var(--text-primary); border-color: var(--text-primary); justify-content: center; }
+        .hand-card.face-down .card-val-rich { color: var(--bg); font-size: 2.5rem; font-weight: 900; }
 
         .team-red { background-color: var(--team-red); border-color: var(--team-red); }
         .team-blue { background-color: var(--team-blue); border-color: var(--team-blue); }
@@ -201,108 +198,115 @@
 
         .seat-selection-row { display: flex; gap: 10px; align-items: stretch; margin-bottom: 1rem; }
         .seat-selection-row select { margin-bottom: 0; flex-grow: 1; }
-        .team-preview-badge { padding: 0 1rem; border-radius: 10px; font-weight: 700; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
+        .team-preview-badge { padding: 0 1rem; border-radius: 12px; font-weight: 800; color: white; display: flex; align-items: center; justify-content: center; min-width: 70px; }
 
-        /* Modals & Chat */
-        #custom-modal, #overlay { display: none; position: fixed; inset: 0; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
+        /* Custom Modal Overlay */
+        #custom-modal, #overlay { display: none; position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); z-index: 500; flex-direction: column; align-items: center; justify-content: center; text-align: center; }
         @keyframes popIn { 0% { transform: scale(0.9); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
-        .modal-box { background: var(--surface); padding: 2rem; border-radius: 20px; width: 85%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .modal-box { background: var(--surface); padding: 2rem; border-radius: 24px; width: 85%; max-width: 340px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         
-        .chat-panel { 
-            display: none; position: fixed; top: 6.5rem; left: 50%; transform: translateX(-50%); width: 95vw; max-width: 400px; height: 450px; max-height: 60dvh;
-            background: var(--surface); border-radius: 16px; box-shadow: 0 15px 30px rgba(0,0,0,0.25); flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 101;
+        /* Emote Picker */
+        #emote-picker {
+            display: none; position: absolute; bottom: 85px; left: 50%; transform: translateX(-50%);
+            background: var(--surface); border-radius: 999px; padding: 12px 20px; box-shadow: 0 10px 30px rgba(0,0,0,0.15);
+            gap: 15px; z-index: 200; border: 1px solid var(--border);
         }
-        .chat-header-bar { background: var(--primary-light); color: var(--primary); padding: 16px; font-weight: 700; text-align: center; display: flex; justify-content: space-between; align-items: center; }
-        .close-chat { cursor: pointer; color: var(--primary); font-size: 1.2rem; }
-        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-        .msg { padding: 10px 14px; border-radius: 14px; max-width: 85%; font-size: 0.95rem; word-wrap: break-word; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
-        .msg.mine { background: var(--primary); align-self: flex-end; color: white; border-bottom-right-radius: 3px; }
-        .msg.others { background: var(--bg); align-self: flex-start; color: var(--text-primary); border-bottom-left-radius: 3px; }
-        .msg-name { font-size: 0.65rem; opacity: 0.8; margin-bottom: 2px; display: block; font-weight: 700; }
-        .chat-input-area { display: flex; padding: 10px; border-top: 1px solid var(--border); gap: 8px; background: var(--surface); }
-        .chat-input-area input { margin-bottom: 0; border-radius: 999px; padding: 0.8rem 1rem; border: none; background: var(--bg); }
-        .chat-input-area button.action-btn { margin-top: 0; width: auto; border-radius: 999px; padding: 0.8rem 1.4rem; }
+        .emote-option { font-size: 1.8rem; cursor: pointer; user-select: none; transition: transform 0.1s; }
+        .emote-option:active { transform: scale(1.3); }
+
+        @keyframes floatUp { 0% { opacity: 0; transform: translate(-50%, 20px) scale(0.5); } 20% { opacity: 1; transform: translate(-50%, 0px) scale(1.2); } 80% { opacity: 1; transform: translate(-50%, -40px) scale(1); } 100% { opacity: 0; transform: translate(-50%, -60px) scale(0.8); } }
+        .floating-emote { position: absolute; left: 50%; top: 30%; pointer-events: none; z-index: 400; font-size: 4rem; animation: floatUp 2.5s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; text-shadow: 0 4px 10px rgba(0,0,0,0.2); }
+        .emote-sender-tag { position: absolute; bottom: -15px; left: 50%; transform: translateX(-50%); font-size: 0.85rem; font-weight: 800; color: white; background: rgba(0,0,0,0.8); padding: 4px 10px; border-radius: 12px; white-space: nowrap; }
+
+        /* Centralized Chat Panel - Styled as an iOS Sheet */
+        .chat-panel { 
+            display: none; position: fixed; bottom: 85px; left: 50%; transform: translateX(-50%); width: 95vw; max-width: 400px; height: 450px; max-height: 60dvh;
+            background: var(--surface); border-radius: 24px; box-shadow: 0 20px 40px rgba(0,0,0,0.2); flex-direction: column; overflow: hidden; border: 1px solid var(--border); z-index: 101;
+        }
+        .chat-header-bar { background: var(--bg); color: var(--text-primary); padding: 16px; font-weight: 800; text-align: center; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); }
+        .close-chat { cursor: pointer; color: var(--text-secondary); font-size: 1.5rem; line-height: 1; }
+        .chat-messages { flex-grow: 1; padding: 16px; overflow-y: auto; display: flex; flex-direction: column; gap: 10px; }
+        .msg { padding: 12px 16px; border-radius: 18px; max-width: 85%; font-size: 1rem; word-wrap: break-word; font-weight: 500; }
+        .msg.mine { background: var(--primary); align-self: flex-end; color: white; border-bottom-right-radius: 4px; }
+        .msg.others { background: var(--bg); align-self: flex-start; color: var(--text-primary); border-bottom-left-radius: 4px; }
+        .msg-name { font-size: 0.75rem; opacity: 0.8; margin-bottom: 4px; display: block; font-weight: 800; }
+        .chat-input-area { display: flex; padding: 12px; border-top: 1px solid var(--border); gap: 8px; background: var(--surface); }
+        .chat-input-area input { margin-bottom: 0; border-radius: 999px; padding: 1rem 1.2rem; border: none; background: var(--bg); flex-grow: 1; }
+        .chat-input-area button.action-btn { margin-top: 0; width: auto; border-radius: 999px; padding: 1rem 1.5rem; }
     </style>
 </head>
 <body>
 
-    <div id="overlay"><h2 style="color: white;" id="overlay-text">Connecting...</h2></div>
+    <div id="overlay"><h2 style="color: white; font-weight: 800;" id="overlay-text">Connecting...</h2></div>
 
     <div id="custom-modal">
         <div class="modal-box">
-            <h3 id="modal-text" style="color: var(--text-primary); font-size: 1.1rem; line-height: 1.4; margin-bottom: 1.5rem; font-weight: 600;">Message</h3>
+            <h3 id="modal-text" style="color: var(--text-primary); font-size: 1.2rem; line-height: 1.4; margin-bottom: 1.5rem; font-weight: 800;">Message</h3>
             <div style="display: flex; gap: 10px; flex-direction: column;">
-                <button id="modal-ok-btn" class="action-btn" style="margin: 0;">OK</button>
+                <button id="modal-ok-btn" class="action-btn primary" style="margin: 0;">OK</button>
                 <button id="modal-cancel-btn" class="action-btn" style="margin: 0; background: var(--bg); color: var(--text-primary); display: none;">Cancel</button>
             </div>
         </div>
     </div>
 
     <div id="app-container">
-        
-        <div id="emote-picker">
-            <span class="emote-option" onclick="sendEmote('🔥')">🔥</span>
-            <span class="emote-option" onclick="sendEmote('😅')">😅</span>
-            <span class="emote-option" onclick="sendEmote('😡')">😡</span>
-            <span class="emote-option" onclick="sendEmote('🎉')">🎉</span>
-            <span class="emote-option" onclick="sendEmote('🤔')">🤔</span>
-        </div>
 
         <div id="chat-panel" class="chat-panel">
             <div class="chat-header-bar"><span>Room Chat</span><span class="close-chat" onclick="toggleChat()">✖</span></div>
             <div id="chat-messages" class="chat-messages"></div>
             <div class="chat-input-area">
                 <input type="text" id="chat-input" placeholder="Message..." onkeypress="if(event.key === 'Enter') sendChat()" autocomplete="off" />
-                <button class="action-btn" onclick="sendChat()">Send</button>
+                <button class="action-btn primary" onclick="sendChat()">Send</button>
             </div>
         </div>
 
         <div id="lobby">
             <div class="lobby-header-row">
                 <h1>Sequence Live</h1>
-                <button class="icon-btn" id="lobby-theme-btn" onclick="toggleTheme()">🌙</button>
+                <button class="tool-btn" id="lobby-theme-btn" onclick="toggleTheme()" style="width: 44px; height: 44px; font-size: 1.2rem;">🌙</button>
             </div>
             
-            <div class="profile-badge" id="profile-stats">🎮 Played: 0 | 🏆 Won: 0</div>
+            <div class="profile-badge" id="profile-stats">🎮 PLAYED: 0 &nbsp;|&nbsp; 🏆 WON: 0</div>
 
             <div class="panel">
-                <h3 style="color: var(--text-primary); font-size: 1.1rem; margin-bottom: 0.5rem;">Create / Join Room</h3>
-                <p style="color: var(--text-secondary); font-size: 0.85rem; margin-top: 0; margin-bottom: 1.25rem;">Enter a Room ID to start, join, or spectate.</p>
+                <h3>Create / Join Room</h3>
+                <p class="subtitle">Enter a Room ID to start, join, or spectate.</p>
                 
-                <input type="text" id="room-id-input" placeholder="Room ID (e.g. GameRoom1)" style="margin-bottom: 1rem;" />
+                <input type="text" id="room-id-input" placeholder="Room ID (e.g. GameRoom1)" style="margin-bottom: 1.5rem;" />
 
-                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">If Hosting New Game:</label>
-                <select id="player-count" style="margin-bottom: 1rem;">
+                <label>If Hosting New Game:</label>
+                <select id="player-count" style="margin-bottom: 1.5rem;">
                     <option value="2">2 Players (Red vs Blue)</option>
                     <option value="3">3 Players (Red vs Blue vs Green)</option>
                     <option value="4">4 Players (2 Teams of 2)</option>
                     <option value="6">6 Players (3 Teams of 2)</option>
                 </select>
                 
-                <label style="font-size: 0.85rem; color: var(--text-primary); display: flex; align-items: center; margin-bottom: 1rem; font-weight: 600; cursor: pointer;">
+                <label style="color: var(--text-primary); display: flex; align-items: center; margin-bottom: 1rem; cursor: pointer; text-transform: none;">
                     <input type="checkbox" id="blitz-checkbox" style="width: auto; margin-right: 10px;"> Enable Blitz Mode (15s Turns)
                 </label>
 
-                <button class="action-btn" onclick="selectRoom()">Find / Create Game</button>
+                <button class="action-btn primary" onclick="selectRoom()">Find / Create Game</button>
             </div>
             
             <div class="panel" id="join-section" style="display: none;">
-                <h3 style="color: var(--primary); font-size: 1.2rem; margin-bottom: 1.25rem;">Room: <span id="lobby-room-name-display" style="font-weight: 800;">...</span></h3>
+                <h3 style="color: var(--primary);">Room: <span id="lobby-room-name-display">...</span></h3>
+                <p class="subtitle">An active game was found.</p>
                 
-                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">1. Choose your seat:</label>
+                <label>1. Choose your seat</label>
                 <div class="seat-selection-row">
                     <select id="seat-selector" onchange="updateLobbyTeamColor()"></select>
                     <div id="lobby-team-preview" class="team-preview-badge">TEAM</div>
                 </div>
                 
-                <label style="font-size: 0.85rem; color: var(--text-secondary); display: block; margin-bottom: 0.5rem; font-weight: 600; text-align: left;">2. Enter your name:</label>
+                <label>2. Enter your name</label>
                 <input type="text" id="join-name" placeholder="John Doe" style="margin-bottom: 1.5rem;" />
                 
                 <div style="display: flex; gap: 10px;">
-                    <button class="action-btn" onclick="joinGame()">Join</button>
-                    <button class="action-btn" style="background: var(--surface); color: var(--primary); border: 2px solid var(--primary);" onclick="spectateGame()">Spectate</button>
+                    <button class="action-btn primary" onclick="joinGame()">Join Game</button>
+                    <button class="action-btn" style="background: var(--bg); color: var(--text-primary); border: 1px solid var(--border);" onclick="spectateGame()">Spectate</button>
                 </div>
-                <button class="action-btn" style="background: transparent; color: var(--team-red); box-shadow: none; margin-top: 1rem; border: 1px solid var(--team-red);" onclick="resetServer()">Reset Server</button>
+                <button class="action-btn" style="background: transparent; color: var(--team-red); margin-top: 1.5rem;" onclick="resetServer()">Reset Server</button>
             </div>
         </div>
 
@@ -312,33 +316,39 @@
                     <h2 id="turn-indicator">Waiting...</h2>
                     <div id="action-hint" class="action-text"></div>
                 </div>
-                
-                <div class="header-center">
-                    <button class="icon-btn" id="audio-toggle-btn" onclick="toggleAudio()">🔊</button>
-                    <button class="icon-btn" onclick="toggleEmotePicker()">😀</button>
-                    <button class="icon-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></button>
-                </div>
-
                 <div class="header-right">
-                    <div style="font-size: 0.85rem; color: var(--text-secondary);">
-                        <span style="margin-right: 4px;">Room: <span id="game-room-name-display" style="color: var(--text-primary); font-weight: 800;">...</span></span><br>
-                        <span style="margin-right: 4px;">Deck: <span id="deck-count" style="color: var(--text-primary); font-weight: 800;">0</span></span><br>
-                        <span id="my-identity" style="font-weight: 700; color: var(--text-primary);"></span>
-                    </div>
-                    <button class="exit-btn" onclick="confirmLeaveRoom()">✖</button>
+                    <div class="stat-text">Room: <span id="game-room-name-display">...</span></div>
+                    <div class="stat-text">Deck: <span id="deck-count">0</span></div>
+                    <div class="stat-text" style="margin-top: 4px; color: var(--primary);"><span id="my-identity" style="color: var(--primary);"></span></div>
                 </div>
-                
-                <div class="blitz-bar-bg" id="blitz-bar-bg"><div class="blitz-bar-fill" id="blitz-bar-fill"></div></div>
             </div>
+            
+            <div class="blitz-bar-bg" id="blitz-bar-bg"><div class="blitz-bar-fill" id="blitz-bar-fill"></div></div>
             
             <div class="board-container" id="board-container">
                 <div id="board" class="board">
                     <svg id="sequence-lines" style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 10;"></svg>
                 </div>
+                
+                <div id="emote-picker">
+                    <span class="emote-option" onclick="sendEmote('🔥')">🔥</span>
+                    <span class="emote-option" onclick="sendEmote('😅')">😅</span>
+                    <span class="emote-option" onclick="sendEmote('😡')">😡</span>
+                    <span class="emote-option" onclick="sendEmote('🎉')">🎉</span>
+                    <span class="emote-option" onclick="sendEmote('🤔')">🤔</span>
+                </div>
             </div>
 
             <div class="hand-container" id="hand-container">
                 <div id="hand" class="hand"></div>
+            </div>
+
+            <div id="bottom-toolbar" class="bottom-toolbar">
+                <button class="tool-btn" id="game-theme-btn" onclick="toggleTheme()">🌙</button>
+                <button class="tool-btn" id="audio-toggle-btn" onclick="toggleAudio()">🔊</button>
+                <button class="tool-btn" onclick="toggleEmotePicker()">😀</button>
+                <button class="tool-btn" onclick="toggleChat()">💬<span id="chat-badge" class="badge">!</span></button>
+                <button class="tool-btn exit-btn" onclick="confirmLeaveRoom()">✖</button>
             </div>
         </div>
     </div>
@@ -372,7 +382,7 @@
         let hasCountedGame = false;
 
         function renderProfile() {
-            document.getElementById('profile-stats').innerText = `🎮 Played: ${localProfile.played} | 🏆 Won: ${localProfile.won}`;
+            document.getElementById('profile-stats').innerText = `🎮 PLAYED: ${localProfile.played}  |  🏆 WON: ${localProfile.won}`;
         }
         renderProfile();
 
@@ -396,8 +406,7 @@
             try {
                 const osc = audioCtx.createOscillator();
                 const gain = audioCtx.createGain();
-                osc.connect(gain);
-                gain.connect(audioCtx.destination);
+                osc.connect(gain); gain.connect(audioCtx.destination);
                 
                 if(type === 'place') {
                     osc.type = 'sine'; osc.frequency.setValueAtTime(400, audioCtx.currentTime);
@@ -420,6 +429,7 @@
             const isDark = document.body.classList.contains('dark-mode');
             const icon = isDark ? '☀️' : '🌙';
             if(document.getElementById('lobby-theme-btn')) document.getElementById('lobby-theme-btn').innerText = icon;
+            if(document.getElementById('game-theme-btn')) document.getElementById('game-theme-btn').innerText = icon;
             setTimeout(drawSequenceLines, 50);
         }
 
@@ -450,7 +460,7 @@
         let currentRoomId = null;
         let gameRef = null; let chatRef = null; let emotesRef = null;
         let gameState = null;
-        let myPlayerId = null; // Can be 'spectator'
+        let myPlayerId = null; 
         let selectedCardIndex = null;
         let chatOpen = false;
         let blitzTimerInterval = null;
@@ -529,7 +539,7 @@
 
                 setTimeout(() => {
                     document.getElementById('overlay-text').innerHTML = `🏆<br>${data.winner.toUpperCase()} TEAM WINS!`;
-                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn" style="max-width:200px;" onclick="returnToLobby()">Back to Lobby</button>`;
+                    overlay.innerHTML = `<h2 style="color: white; margin-bottom: 1.5rem; font-weight: 900;">🏆<br>${data.winner.toUpperCase()} TEAM WINS!</h2><button class="action-btn primary" style="max-width:200px;" onclick="returnToLobby()">Back to Lobby</button>`;
                     overlay.style.display = 'flex';
                 }, myPlayerId !== null ? 1000 : 0);
             }
@@ -607,7 +617,6 @@
             let cardsToDeal = (count === 3 || count === 4) ? 6 : (count === 6 ? 5 : 7);
             let players = [];
             for(let i = 0; i < count; i++) {
-                // Initialize players as NOT connected yet
                 players.push({ id: i, name: `Player ${i+1}`, teamClass: teams[i % numTeams], hand: deck.splice(0, cardsToDeal), connected: false });
             }
 
@@ -638,17 +647,14 @@
             document.getElementById('overlay').style.display = 'flex';
             document.getElementById('overlay').innerHTML = `<h2 style="color: white;" id="overlay-text">Joining...</h2>`;
 
-            // Update player state to connected
             gameRef.child(`players/${myPlayerId}`).update({ name: myName, connected: true }).then(() => {
                 document.getElementById('overlay').style.display = 'none';
                 
-                // Immediately check if this join completes the lobby
                 gameRef.once('value').then(snap => {
                     const st = snap.val();
                     if (st && st.status === 'PLAYING' && !st.matchStarted) {
                         const allJoined = st.players.every(p => p.connected);
                         if (allJoined) {
-                            // Safely start the match and trigger the blitz timer
                             gameRef.update({ matchStarted: true, turnStartTime: Date.now() });
                         }
                     }
@@ -667,9 +673,9 @@
         }
 
         function returnToLobby() { location.reload(); }
-        function confirmLeaveRoom() { showCustomConfirm("Are you sure you want to leave the room?", returnToLobby); }
+        function confirmLeaveRoom() { showCustomConfirm("Are you sure you want to leave?", returnToLobby); }
         function resetServer() { 
-            showCustomConfirm("Permanently delete room for everyone?", () => {
+            showCustomConfirm("Delete room for everyone?", () => {
                 if(gameRef) gameRef.set(null).catch(e => {}); 
                 if(chatRef) chatRef.set(null).catch(e => {}); 
                 returnToLobby(); 
@@ -744,7 +750,7 @@
                 let left = Math.max(0, TIME_LIMIT - elapsed);
                 let pct = (left / TIME_LIMIT) * 100;
                 barFill.style.width = `${pct}%`;
-                barFill.style.background = pct < 25 ? 'red' : 'var(--primary)';
+                barFill.style.background = pct < 25 ? 'var(--team-red)' : 'var(--primary)';
 
                 if (left <= 0 && myPlayerId === gameState.turnIndex && gameRef) {
                     clearInterval(blitzTimerInterval);
@@ -830,23 +836,23 @@
             const deckCountDisplay = document.getElementById('deck-count');
 
             if (myPlayerId === 'spectator') {
-                turnIndicator.innerText = "Spectating 👀";
+                turnIndicator.innerText = "SPECTATING 👀";
                 hint.innerText = `${currentPlayer.name.split(' ')[0]}'s Turn`;
                 document.getElementById('my-identity').innerText = "Spectator";
                 deckCountDisplay.innerText = gameState.matchStarted ? (gameState.deck ? gameState.deck.length : 0) : "Hidden";
             } else {
                 if (!gameState.matchStarted) {
                     const joinedCount = gameState.players.filter(p => p.connected).length;
-                    turnIndicator.innerText = "Waiting...";
+                    turnIndicator.innerText = "WAITING...";
                     hint.innerText = `${joinedCount} / ${gameState.playerCount} Joined`;
                     document.getElementById('my-identity').innerText = myPlayer.name;
                     deckCountDisplay.innerText = "Hidden";
                 } else {
-                    turnIndicator.innerText = isMyTurn ? "Your Turn" : `Waiting for ${currentPlayer.name.split(' ')[0]}...`;
+                    turnIndicator.innerText = isMyTurn ? "YOUR TURN" : `WAITING...`;
                     document.getElementById('my-identity').innerText = myPlayer.name;
                     deckCountDisplay.innerText = gameState.deck ? gameState.deck.length : 0;
 
-                    if (!isMyTurn) { hint.innerText = "Please wait."; }
+                    if (!isMyTurn) { hint.innerText = `${currentPlayer.name.split(' ')[0]} is thinking.`; }
                     else if (selectedCardIndex === null) { hint.innerText = "Select a card to play."; }
                     else {
                         const c = myPlayer.hand[selectedCardIndex];
@@ -895,11 +901,9 @@
                         div.className = `hand-card ${selectedCardIndex === index ? 'selected' : ''}`;
 
                         if (!gameState.matchStarted) {
-                            // Render Face Down Card
                             div.classList.add('face-down');
-                            div.innerHTML = `<span class="card-val-rich" style="color: white; font-size: 2.2rem; font-weight: 800;">S</span>`;
+                            div.innerHTML = `<span class="card-val-rich" style="color: var(--bg); font-size: 2.2rem; font-weight: 900;">S</span>`;
                         } else {
-                            // Render Normal Face Up Card
                             const isRed = card.suit === '♥' || card.suit === '♦';
                             const richColor = isRed ? 'red' : 'black';
                             
@@ -938,7 +942,7 @@
 
                 const line = document.createElementNS("http://www.w3.org/2000/svg", "line");
                 line.setAttribute('x1', x1); line.setAttribute('y1', y1); line.setAttribute('x2', x2); line.setAttribute('y2', y2);
-                line.setAttribute('stroke', '#eab308'); line.setAttribute('stroke-width', '5'); line.setAttribute('stroke-linecap', 'round');
+                line.setAttribute('stroke', 'var(--primary)'); line.setAttribute('stroke-width', '6'); line.setAttribute('stroke-linecap', 'round');
                 svg.appendChild(line);
             });
         }
